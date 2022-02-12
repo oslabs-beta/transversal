@@ -1,15 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const app = express();
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
 const Transversal = require('../Transversal');
-const socketio = require('socket.io');
 const { User } = require('./models/mongoModel');
-const io = socketio(server);
-
 const PORT = process.env.PORT || 3000;
+const socketio = require('socket.io');
+const http = require('http');
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server, {
+  cors: {
+    origin: 'http://localhost:8080'
+  }
+});
 
 /**
  * Middlewares
@@ -52,8 +57,17 @@ const resolver = async (parent, args) => {
 
 obj.generateQuery('getUsers', 'User', resolver);
 
+/**
+ * Socket IO - Bi-directional connection with client
+ */
+
 io.on('connection', (socket) => {
-  socket.emit('transverse1asdfasdfasd1111f', obj);
+  console.log('client connected: ', socket.id)
+  socket.emit('transverse', obj);
+
+  socket.on('disconnect',(reason)=>{
+    console.log(reason)
+  })
 });
 
 /**
@@ -94,6 +108,6 @@ app.use((err, req, res, next) => {
 /**
  * Start server
  */
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on the server ${PORT}`);
 });
