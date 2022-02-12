@@ -1,0 +1,39 @@
+{
+  "name": "transversal",
+  "version": "1.0.0",
+  "description": "Tool for GraphQL schema generation, server side caching, and template generation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node server/server.js",
+    "dev": "concurrently \"NODE_ENV=development nodemon server/server.js\" \"NODE_ENV=development webpack-dev-server --open\"",
+    "build:prod": "NODE_ENV=production webpack",
+    "build:dev": "NODE_ENV=development webpack serve --open",
+    "server:run": "nodemon ./server/server.js",
+    "format:lint": "npx eslint --ext .jsx --ext .js . --fix",
+    "format:pretty": "prettier --write '**/*.{jsx,js,css,html}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oslabs-beta/transversal.git"
+  },
+  "author": "Han, Kevin, Norman, and Dan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oslabs-beta/transversal/issues"
+  },
+  "homepage": "https://github.com/oslabs-beta/transversal#readme",
+  "dependencies": {
+    "concurrently": "^7.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "mongoose": "^6.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "^7.28.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1"
+  }
+}
