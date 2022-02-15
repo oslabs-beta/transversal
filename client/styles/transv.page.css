@@ -1,0 +1,28 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+.display {
+  min-height: 92.9vh;
+	/* min-height: 100vh; */
+	/* display: grid;
+   grid-template-columns: 1fr 1fr; */
+	display: flex;
+}
+
+.operation {
+	/* height: 100vh;
+  width: 100%; */
+	/* width: 50vw; */
+	background-color: red;
+	flex: 1;
+}
+
+.response {
+	/* height: 100vh
+  width: 100% */
+	/* width: 50vw; */
+	background-color: blue;
+	flex: 1;
+}

@@ -1,0 +1,28 @@
+.header {
+	padding: 20px 45px;
+	background-color: #747879;
+	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	max-width: 1100px;
+	margin: 0 auto;
+	overflow: auto;
+}
+
+.button-display {
+	display: flex;
+}
+.button-display button {
+	margin-right:  10px;
+}
+
+.logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.drawer {
+	display: flex;
+}

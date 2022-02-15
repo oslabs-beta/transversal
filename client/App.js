@@ -5,6 +5,7 @@ import {
 	Route,
 	Navigate,
 } from 'react-router-dom';
+import TransV from './page/TransV';
 import { io } from 'socket.io-client';
 
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
 		<Router>
 			<div className='container'>
 				<Routes>
-					<Route exact path='/' element={<h1>Hellow World!</h1>} />
+					<Route exact path='/transv' element={<TransV/>} />
 				</Routes>
 			</div>
 		</Router>
