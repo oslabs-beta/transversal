@@ -29,7 +29,6 @@ const App = () => {
 			age: 10,
 			height: 10,
 		});
-		console.log(users);
 	});
 
 	return (

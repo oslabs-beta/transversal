@@ -59,7 +59,6 @@ gql.generateFieldSchema();
 
 const resolver = async (parent, args) => {
 	const users = await User.find({ age: args.age });
-	console.log(users);
 	return users;
 };
 
@@ -81,8 +80,6 @@ function replacer(key, value) {
 }
 
 const json = JSON.stringify(gql, replacer);
-
-console.log(json);
 
 /**
  * Socket IO - Bi-directional connection with client
