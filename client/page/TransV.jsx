@@ -10,10 +10,11 @@ const TransV = () => {
 			<div>
 				<Header />
 			</div>
-			<div className='display'>
+			<div className='display-container'>
 				<div className='operation'>
 					<Operation />
 				</div>
+				<div className='bar'></div>
 				<div className='response'>
 					<Response />
 				</div>

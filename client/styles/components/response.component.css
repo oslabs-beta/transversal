@@ -1,11 +1,13 @@
-.operation-container {
+.response-container {
 	height: 100%;
 	width: 100%;
 	padding: 1rem;
 }
 
-.editor {
+iframe {
 	height: 100%;
 	width: 100%;
+	border-style: none;
 	overflow-y: auto;
+	white-space: pre;
 }

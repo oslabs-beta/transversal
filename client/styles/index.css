@@ -1,13 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora&display=swap');
 
-
-html, body, #root{
-  background-color: white;
-  height: 100%;
-  font-family: 'Sora', sans-serif;
+html,
+body,
+#root {
+	background-color: white;
+	height: 100%;
+	width: 100%;
+	font-family: 'Sora', sans-serif;
+	overflow: hidden;
 }
 
 * {
-    margin: 0,
-    
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
