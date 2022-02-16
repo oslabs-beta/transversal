@@ -35,23 +35,43 @@ class Transversal {
 			// mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
+
 		this.gql = {};
-		this.transversalQuery = async (gql, variables) => {
-			const res = await fetch('/graphql', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-				},
-				body: JSON.stringify({
-					query: gql,
-					variables: variables,
-				}),
-			})
-				.then((res) => res.json())
-				.then((data) => data);
-			return res;
+
+		this.transversalQuery = async (gql, variables, cacheOption = false) => {
+			const request = async (gql, variables) => {
+				const res = await fetch('/graphql', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+					},
+					body: JSON.stringify({
+						query: gql,
+						variables: variables,
+					}),
+				})
+					.then((res) => res.json())
+					.then((data) => data);
+				return res;
+			};
+
+			if (!cacheOption) {
+				console.log('caching option not selected');
+				const res = await request(gql, variables);
+				return res;
+			} else {
+				console.log('caching option selected');
+				// get data from cache server
+				// if data is there, then return data
+				// if data is not there, call graphql query
+				const res = await request(gql, variables);
+				// save in cache server
+				// return data
+				return res;
+			}
 		};
+
 		// To map Mongo data type to GraphQL data type
 		this.#type = {
 			String: GraphQLString,

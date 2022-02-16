@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
 const Transversal = require('../Transversal');
+const TransversalCache = require('../TransversalCache');
 const { User } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
@@ -50,13 +51,33 @@ mongoose
 	.catch((err) => console.log(err));
 
 /**
- * Instantiate Transversal
+ * Instantiate Transversal and cache
  */
 
 const gql = new Transversal([User]);
+const cache = new TransversalCache();
 
+/**
+ * Test code... run redis-server / redis-cli
+ */
+async function test() {
+	await cache.set('name', 'kim');
+	const myName = await cache.get('name');
+	console.log('hi', myName);
+	return myName;
+}
+
+/**
+ * TODO: Build transversal api to handle cache option
+ * Then, make a call to graphql
+ */
+app.get('/transversal');
+
+test();
+// Generate field schema
 gql.generateFieldSchema();
 
+// Custom resolver and arguments
 const resolver = async (parent, args) => {
 	const users = await User.find({ age: args.age });
 	return users;
@@ -67,10 +88,10 @@ const args = {
 	height: { type: GraphQLInt },
 };
 
+// Generate resolver and query
 gql.generateQuery('getUsers', 'User', resolver, args);
 
 // Stringify object with methods
-
 function replacer(key, value) {
 	if (typeof value === 'function') {
 		return value.toString();
@@ -87,6 +108,7 @@ const json = JSON.stringify(gql, replacer);
 
 io.on('connection', (socket) => {
 	console.log('client connected: ', socket.id);
+	// Send gql object
 	socket.emit('transverse', json);
 
 	socket.on('disconnect', (reason) => {
