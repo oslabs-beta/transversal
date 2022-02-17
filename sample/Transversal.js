@@ -6,14 +6,17 @@ const {
 	GraphQLID,
 	GraphQLSchema,
 } = require('graphql');
+const TransversalCache = require('./TransversalCache');
 
 class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
 	#ResolverSchema;
+	cache;
 
 	constructor(MongoModels) {
+		this.cache = new TransversalCache();
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
 		this.#ResolverSchema = {
@@ -39,8 +42,8 @@ class Transversal {
 		this.gql = {};
 
 		this.transversalQuery = async (gql, variables, cacheOption = false) => {
-			const request = async (gql, variables) => {
-				const res = await fetch('/graphql', {
+			const request = async (endpoint, gql, variables) => {
+				const res = await fetch(endpoint, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -58,16 +61,24 @@ class Transversal {
 
 			if (!cacheOption) {
 				console.log('caching option not selected');
-				const res = await request(gql, variables);
+				const res = await request('/graphql', gql, variables);
 				return res;
 			} else {
-				console.log('caching option selected');
-				// get data from cache server
-				// if data is there, then return data
-				// if data is not there, call graphql query
-				const res = await request(gql, variables);
-				// save in cache server
-				// return data
+				console.log('caching option selected!');
+
+				const res = await fetch('/transversal', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+					},
+					body: JSON.stringify({
+						query: gql,
+						variables: variables,
+					}),
+				})
+					.then((res) => res.json())
+					.then((data) => data);
 				return res;
 			}
 		};
@@ -105,7 +116,7 @@ class Transversal {
 	/**
 	 * Generate GraphQL query and save to this.RootSchema
 	 */
-	generateQuery(queryName, fieldSchemaName, resolver, args, isCache) {
+	generateQuery(queryName, fieldSchemaName, resolver, args) {
 		// Generate Resolver
 		this.#ResolverSchema.query.fields[queryName] = {
 			type: new GraphQLList(this.#FieldSchema[fieldSchemaName]),
@@ -173,6 +184,9 @@ class Transversal {
       `;
 
 		return gqlQuery;
+	}
+	findGqlKey(gql) {
+		return Object.keys(this.gql).find((key) => this.gql[key] === gql);
 	}
 }
 

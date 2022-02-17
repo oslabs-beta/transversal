@@ -4,7 +4,6 @@ const path = require('path');
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
 const Transversal = require('../Transversal');
-const TransversalCache = require('../TransversalCache');
 const { User } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
@@ -19,6 +18,7 @@ const {
 	GraphQLID,
 	GraphQLSchema,
 } = require('graphql');
+
 const io = socketio(server, {
 	cors: {
 		origin: 'http://localhost:8080',
@@ -54,28 +54,28 @@ mongoose
  * Instantiate Transversal and cache
  */
 
-const gql = new Transversal([User]);
-const cache = new TransversalCache();
+const transversal = new Transversal([User]);
 
 /**
  * Test code... run redis-server / redis-cli
  */
-async function test() {
-	await cache.set('name', 'kim');
-	const myName = await cache.get('name');
-	console.log('hi', myName);
-	return myName;
-}
+// async function test() {
+// 	await transversal.cache.set('name', 'kim');
+// 	const myName = await transversal.cache.get('name');
+// 	console.log('hi', myName);
+// 	return myName;
+// }
+
+// test();
 
 /**
  * TODO: Build transversal api to handle cache option
  * Then, make a call to graphql
  */
-app.get('/transversal');
+app.use('/transversal', transversal.cache.cacheMiddleware);
 
-test();
 // Generate field schema
-gql.generateFieldSchema();
+transversal.generateFieldSchema();
 
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
@@ -89,7 +89,7 @@ const args = {
 };
 
 // Generate resolver and query
-gql.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getUsers', 'User', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {
@@ -100,7 +100,10 @@ function replacer(key, value) {
 	}
 }
 
-const json = JSON.stringify(gql, replacer);
+const json = JSON.stringify(
+	{ gql: transversal.gql, transversalQuery: transversal.transversalQuery },
+	replacer
+);
 
 /**
  * Socket IO - Bi-directional connection with client
@@ -122,7 +125,7 @@ io.on('connection', (socket) => {
 app.use(
 	'/graphql',
 	graphqlHTTP({
-		schema: gql.RootSchema,
+		schema: transversal.RootSchema,
 		graphiql: true,
 	})
 );
