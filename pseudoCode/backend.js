@@ -2,6 +2,25 @@
  * Custom class to generate GraphQL Schema, Query, and Mutation object
  */
 
+const fileSchema = new mongoose.Schema({
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
+	user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+	name: {
+		type: String,
+		required: [true, 'Uploaded file must have a name'],
+	},
+	desc: {
+		type: String,
+	},
+	path: {
+		type: String,
+		required: true,
+	},
+});
+
 class Transversal {
 	constructor(MongoSchema) {
 		this.MongoSchema = [];
@@ -16,6 +35,7 @@ class Transversal {
 			/**
 			 * Generate GraphQL schema and save to this.GqlSchema
 			 */
+			//generate object type
 		});
 	}
 
