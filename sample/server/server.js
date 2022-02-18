@@ -18,6 +18,7 @@ const {
 	GraphQLID,
 	GraphQLSchema,
 } = require('graphql');
+
 const io = socketio(server, {
 	cors: {
 		origin: 'http://localhost:8080',
@@ -50,13 +51,33 @@ mongoose
 	.catch((err) => console.log(err));
 
 /**
- * Instantiate Transversal
+ * Instantiate Transversal and cache
  */
 
-const gql = new Transversal([User]);
+const transversal = new Transversal([User]);
 
-gql.generateFieldSchema();
+/**
+ * Test code... run redis-server / redis-cli
+ */
+// async function test() {
+// 	await transversal.cache.set('name', 'kim');
+// 	const myName = await transversal.cache.get('name');
+// 	console.log('hi', myName);
+// 	return myName;
+// }
 
+// test();
+
+/**
+ * TODO: Build transversal api to handle cache option
+ * Then, make a call to graphql
+ */
+app.use('/transversal', transversal.cache.cacheMiddleware);
+
+// Generate field schema
+transversal.generateFieldSchema();
+
+// Custom resolver and arguments
 const resolver = async (parent, args) => {
 	const users = await User.find({ age: args.age });
 	return users;
@@ -67,10 +88,10 @@ const args = {
 	height: { type: GraphQLInt },
 };
 
-gql.generateQuery('getUsers', 'User', resolver, args);
+// Generate resolver and query
+transversal.generateQuery('getUsers', 'User', resolver, args);
 
 // Stringify object with methods
-
 function replacer(key, value) {
 	if (typeof value === 'function') {
 		return value.toString();
@@ -79,7 +100,10 @@ function replacer(key, value) {
 	}
 }
 
-const json = JSON.stringify(gql, replacer);
+const json = JSON.stringify(
+	{ gql: transversal.gql, transversalQuery: transversal.transversalQuery },
+	replacer
+);
 
 /**
  * Socket IO - Bi-directional connection with client
@@ -87,6 +111,7 @@ const json = JSON.stringify(gql, replacer);
 
 io.on('connection', (socket) => {
 	console.log('client connected: ', socket.id);
+	// Send gql object
 	socket.emit('transverse', json);
 
 	socket.on('disconnect', (reason) => {
@@ -100,7 +125,7 @@ io.on('connection', (socket) => {
 app.use(
 	'/graphql',
 	graphqlHTTP({
-		schema: gql.RootSchema,
+		schema: transversal.RootSchema,
 		graphiql: true,
 	})
 );

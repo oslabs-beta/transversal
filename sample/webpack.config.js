@@ -39,6 +39,7 @@ module.exports = {
 		historyApiFallback: true,
 		proxy: {
 			'/graphql': 'http://localhost:3000/',
+			'/transversal': 'http://localhost:3000/',
 		},
 	},
 };
