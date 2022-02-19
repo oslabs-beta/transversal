@@ -37,6 +37,9 @@ class TransversalCache {
 					req.body.query,
 					req.body.variables
 				);
+				/**
+				 * TODO: Parse gql and grab schema name
+				 */
 				await this.set('data', JSON.stringify(data));
 
 				return res.status(200).json(data);
