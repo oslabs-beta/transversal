@@ -116,14 +116,20 @@ class Transversal {
 	generateCustomFieldSchema(customGQL, customName) {
 		const fields = {};
 
+		//fucntion to accept obj and fieldName
+		//check to see if object
+
 		Object.keys(customGQL).forEach((customField) => {
 			if (typeof customGQL[customField] !== 'object') {
 				fields[customField] = {
 					type: this.#type[customGQL[customField]],
 				};
+			} else if (Array.isArray(customGQL[customField])) {
+				//make new GraphQl List
 			} else {
+				//new graphlQLObjectType
 				fields[customField] = {};
-				//loop through field anf assign types to subfield
+
 				Object.keys(customGQL[customField]).forEach((subfield) => {
 					fields[customField][subfield] = {
 						type: this.#type[customGQL[customField][subfield]],
@@ -136,7 +142,6 @@ class Transversal {
 			name: customName,
 			fields: () => fields,
 		});
-		console.log(Object.keys(this.#FieldSchema.User._fields))
 	}
 
 	/**

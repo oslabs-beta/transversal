@@ -77,7 +77,7 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 // Generate field schema
 transversal.generateFieldSchema();
 
-const custom = { name: 'String', age: 'Number', messages: { message: 'String' } };
+const custom = { name: 'String', age: 'Number' };
 
 transversal.generateCustomFieldSchema(custom, 'CustomQuery');
 
@@ -93,7 +93,7 @@ const args = {
 };
 
 // Generate resolver and query
-// transversal.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getUsers', 'User', resolver, args);
 transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods

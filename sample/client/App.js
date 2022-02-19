@@ -38,8 +38,7 @@ const App = () => {
 			gqlObj.gql.getCustom,
 			{
 				age: 10,
-			},
-			true
+			}
 		);
 
 		console.log(custom);
