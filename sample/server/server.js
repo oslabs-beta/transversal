@@ -57,18 +57,6 @@ mongoose
 const transversal = new Transversal([User]);
 
 /**
- * Test code... run redis-server / redis-cli
- */
-// async function test() {
-// 	await transversal.cache.set('name', 'kim');
-// 	const myName = await transversal.cache.get('name');
-// 	console.log('hi', myName);
-// 	return myName;
-// }
-
-// test();
-
-/**
  * TODO: Build transversal api to handle cache option
  * Then, make a call to graphql
  */
@@ -79,7 +67,8 @@ transversal.generateFieldSchema();
 
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
-	const users = await User.find({ age: args.age });
+	const users = await User.find({ age: args.age, height: args.height });
+	console.log(users);
 	return users;
 };
 
