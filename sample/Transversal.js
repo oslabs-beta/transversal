@@ -113,6 +113,32 @@ class Transversal {
 		});
 	}
 
+	generateCustomFieldSchema(customGQL, customName) {
+		const fields = {};
+
+		Object.keys(customGQL).forEach((customField) => {
+			if (typeof customGQL[customField] !== 'object') {
+				fields[customField] = {
+					type: this.#type[customGQL[customField]],
+				};
+			} else {
+				fields[customField] = {};
+				//loop through field anf assign types to subfield
+				Object.keys(customGQL[customField]).forEach((subfield) => {
+					fields[customField][subfield] = {
+						type: this.#type[customGQL[customField][subfield]],
+					};
+				});
+			}
+		});
+
+		this.#FieldSchema[customName] = new GraphQLObjectType({
+			name: customName,
+			fields: () => fields,
+		});
+		console.log(Object.keys(this.#FieldSchema.User._fields))
+	}
+
 	/**
 	 * Generate GraphQL query and save to this.RootSchema
 	 */

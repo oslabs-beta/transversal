@@ -25,16 +25,24 @@ const App = () => {
 		const gqlObj = JSON.parse(gql, parser);
 		console.log('GQL Object from server..', gqlObj);
 
-		const users = await gqlObj.transversalQuery(
-			gqlObj.gql.getUsers,
+		// const users = await gqlObj.transversalQuery(
+		// 	gqlObj.gql.getUsers,
+		// 	{
+		// 		age: 10,
+		// 		height: 10,
+		// 	},
+		// 	true
+		// );
+
+		const custom = await gqlObj.transversalQuery(
+			gqlObj.gql.getCustom,
 			{
 				age: 10,
-				height: 10,
 			},
 			true
 		);
 
-		console.log(users);
+		console.log(custom);
 	});
 
 	return (

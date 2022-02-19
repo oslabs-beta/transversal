@@ -77,6 +77,10 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 // Generate field schema
 transversal.generateFieldSchema();
 
+const custom = { name: 'String', age: 'Number', messages: { message: 'String' } };
+
+transversal.generateCustomFieldSchema(custom, 'CustomQuery');
+
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
 	const users = await User.find({ age: args.age });
@@ -85,11 +89,12 @@ const resolver = async (parent, args) => {
 
 const args = {
 	age: { type: GraphQLInt },
-	height: { type: GraphQLInt },
+	// height: { type: GraphQLInt },
 };
 
 // Generate resolver and query
-transversal.generateQuery('getUsers', 'User', resolver, args);
+// transversal.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {
