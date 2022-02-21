@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
 const Transversal = require('../Transversal');
-const { User } = require('./models/mongoModel');
+const { User, Message } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
 const http = require('http');
@@ -54,7 +54,7 @@ mongoose
  * Instantiate Transversal and cache
  */
 
-const transversal = new Transversal([User]);
+const transversal = new Transversal([User, Message]);
 
 /**
  * Test code... run redis-server / redis-cli
@@ -76,10 +76,15 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 
 // Generate field schema
 transversal.generateFieldSchema();
+transversal.generateRelationalField('User', 'users', 'Message');
 
-const custom = { name: 'String', age: 'Number' };
+// const custom = {
+// 	name: 'String',
+// 	age: 'Number',
+// 	list: []
+// };
 
-transversal.generateCustomFieldSchema(custom, 'CustomQuery');
+// transversal.generateCustomFieldSchema(custom, 'CustomQuery');
 
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
@@ -94,7 +99,7 @@ const args = {
 
 // Generate resolver and query
 transversal.generateQuery('getUsers', 'User', resolver, args);
-transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
+// transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {
