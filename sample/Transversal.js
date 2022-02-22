@@ -12,6 +12,7 @@ class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
+	#ReusableFieldSchema;
 	#ResolverSchema;
 	cache;
 
@@ -19,6 +20,7 @@ class Transversal {
 		this.cache = new TransversalCache();
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
+		this.#ReusableFieldSchema = {};
 		this.#ResolverSchema = {
 			query: {
 				name: 'RootQuery',
@@ -106,6 +108,8 @@ class Transversal {
 				}
 			});
 
+			this.#ReusableFieldSchema[model.modelName] = { ...fields };
+
 			this.#FieldSchema[model.modelName] = new GraphQLObjectType({
 				name: model.modelName,
 				fields: () => fields,
@@ -113,82 +117,70 @@ class Transversal {
 		});
 	}
 
-	// generateCustomFieldSchema(customGQL, customName) {
-	// 	const fields = {};
-
-	// 	Object.keys(customGQL).forEach((customField) => {
-	// 		if (typeof customGQL[customField] !== 'object') {
-	// 			fields[customField] = {
-	// 				type: this.#type[customGQL[customField]],
-	// 			};
-	// 		} else if (Array.isArray(customGQL[customField])) {
-	// 			const result = [];
-	// 			customGQL[customField].forEach((elem) => {
-	// 				result.push(this.generateCustomFieldSchema(elem));
-	// 			});
-	// 			//make new GraphQl List
-	// 			fields[customField] = new GraphQLList(result);
-	// 		} else {
-	// 			//new graphlQLObjectType
-
-	// 			// Object.keys(customGQL[customField]).forEach((subfield) => {
-	// 			// 	fields[customField][subfield] = {
-	// 			// 		type: this.#type[customGQL[customField][subfield]],
-	// 			// 	};
-	// 			// });
-	// 			const result = this.generateCustomFieldSchema(fields[customField]);
-
-	// 			fields[customField] = new GraphQLObjectType({
-	// 				name: customField,
-	// 				fields: () => result,
-	// 			});
-	// 		}
-	// 		return fields;
-	// 	});
-
-	// 	this.#FieldSchema[customName] = new GraphQLObjectType({
-	// 		name: customName,
-	// 		fields: () => fields,
-	// 	});
-	// }
-
-	generateRelationalField(fieldSchemaName, fieldName, relation, resolver) {
+	generateRelationalField(
+		fieldSchemaName,
+		fieldName,
+		relation,
+		resolver,
+		args
+	) {
 		//find fieldSchema
-		const newType = this.#FieldSchema[fieldSchemaName]._fields();
-		newType[fieldName] = new GraphQLList(this.#FieldSchema[relation]);
-		console.log(newType);
+		const newType = this.#ReusableFieldSchema[fieldSchemaName];
+		newType[fieldName] = {
+			type: new GraphQLList(this.#FieldSchema[relation]),
+			args: args ? args : null,
+			resolve: resolver,
+		};
+
+		this.#FieldSchema[fieldSchemaName] = new GraphQLObjectType({
+			name: fieldSchemaName,
+			fields: () => newType,
+		});
 	}
 
 	generateCustomFieldSchema(customGQL, customName) {
-		const fields = {};
+		console.log(customGQL);
 
-		Object.keys(customGQL).forEach((customField) => {
-			if (typeof customGQL[customField] !== 'object') {
-				fields[customField] = {
-					type: this.#type[customGQL[customField]],
-				};
-			} else if (Array.isArray(customGQL[customField])) {
-				// 	fields[customField] = new GraphQLList(fields[customField]);
-				// } else {
-				// 	//new graphlQLObjectType
-				// 	Object.keys(customGQL[customField]).forEach((subfield) => {
-				// 		fields[customField][subfield] = {
-				// 			type: this.#type[customGQL[customField][subfield]],
-				// 		};
-				// 	});
-				// const result = this.generateCustomFieldSchema(fields[customField]);
-				// fields[customField] = new GraphQLObjectType({
-				// 	name: customField,
-				// 	fields: () => result,
-				// });
-			}
-			//return fields;
-		});
+		const traverse = (gqlObj) => {
+			const fields = {};
+			Object.keys(gqlObj).forEach((customField) => {
+				if (typeof gqlObj[customField] !== 'object') {
+					fields[customField] = {
+						type: this.#type[gqlObj[customField]],
+					};
+					return fields;
+				} else if (Array.isArray(gqlObj[customField])) {
+					if (typeof gqlObj[customField][0] !== 'object')
+						fields[customField] = {
+							type: new GraphQLList(this.#FieldSchema[gqlObj[customField][0]]),
+						};
+					else {
+						const result = traverse(gqlObj[customField][0]);
+						const obj = new GraphQLObjectType({
+							name: customField,
+							fields: () => result,
+						});
+						fields[customField] = { type: new GraphQLList(obj) };
+					}
+				} else {
+					// 	//new graphlQLObjectType
+					const result = traverse(gqlObj[customField]);
+					const obj = new GraphQLObjectType({
+						name: customField,
+						fields: () => result,
+					});
+				}
+				return fields;
+			});
+			return fields;
+		};
+		const customFields = traverse(customGQL);
 
 		this.#FieldSchema[customName] = new GraphQLObjectType({
 			name: customName,
-			fields: () => fields,
+			fields: () => customFields,
 		});
+		console.log(this.#FieldSchema[customName]._fields());
 	}
 
 	/**

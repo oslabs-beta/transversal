@@ -76,15 +76,25 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 
 // Generate field schema
 transversal.generateFieldSchema();
-transversal.generateRelationalField('User', 'users', 'Message');
 
-// const custom = {
-// 	name: 'String',
-// 	age: 'Number',
-// 	list: []
-// };
+const customResolver = async (parent, args) => {
+	const messages = await Message.find({ userId: parent._id });
+	return messages;
+};
+transversal.generateRelationalField(
+	'User',
+	'messages',
+	'Message',
+	customResolver
+);
 
-// transversal.generateCustomFieldSchema(custom, 'CustomQuery');
+const custom = {
+	name: 'String',
+	age: 'Number',
+	list: [{ name: 'String', age: 'Number', user: { name: 'String' } }],
+};
+
+transversal.generateCustomFieldSchema(custom, 'CustomQuery');
 
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
