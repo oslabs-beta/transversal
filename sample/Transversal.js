@@ -107,7 +107,7 @@ class Transversal {
 					};
 				}
 			});
-
+			//saving fields to be used later or elsewhere
 			this.#ReusableFieldSchema[model.modelName] = { ...fields };
 
 			this.#FieldSchema[model.modelName] = new GraphQLObjectType({
@@ -139,10 +139,10 @@ class Transversal {
 	}
 
 	generateCustomFieldSchema(customGQL, customName) {
-		console.log(customGQL);
-
 		const traverse = (gqlObj) => {
 			const fields = {};
+			//useto hold non graphql types representing arrays and objects for string generation
+			const reusableFields = {};
 			Object.keys(gqlObj).forEach((customField) => {
 				if (typeof gqlObj[customField] !== 'object') {
 					fields[customField] = {
@@ -150,11 +150,11 @@ class Transversal {
 					};
 					return fields;
 				} else if (Array.isArray(gqlObj[customField])) {
-					if (typeof gqlObj[customField][0] !== 'object')
+					if (typeof gqlObj[customField][0] !== 'object') {
 						fields[customField] = {
 							type: new GraphQLList(this.#FieldSchema[gqlObj[customField][0]]),
 						};
-					else {
+					} else {
 						const result = traverse(gqlObj[customField][0]);
 						const obj = new GraphQLObjectType({
 							name: customField,
@@ -175,12 +175,14 @@ class Transversal {
 			return fields;
 		};
 		const customFields = traverse(customGQL);
+		//saving fields to be used later or elsewhere
+		this.#ReusableFieldSchema[customName] = { ...customFields };
 
 		this.#FieldSchema[customName] = new GraphQLObjectType({
 			name: customName,
 			fields: () => customFields,
 		});
-		console.log(this.#FieldSchema[customName]._fields());
+		// console.log(this.#FieldSchema[customName]._fields());
 	}
 
 	/**
@@ -200,7 +202,6 @@ class Transversal {
 			// mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
-
 		// Generate gql query string
 		const gql = this.createGQLString(
 			queryName,

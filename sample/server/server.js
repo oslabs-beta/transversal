@@ -77,16 +77,16 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 // Generate field schema
 transversal.generateFieldSchema();
 
-const customResolver = async (parent, args) => {
-	const messages = await Message.find({ userId: parent._id });
-	return messages;
-};
-transversal.generateRelationalField(
-	'User',
-	'messages',
-	'Message',
-	customResolver
-);
+// const customResolver = async (parent, args) => {
+// 	const messages = await Message.find({ userId: parent._id });
+// 	return messages;
+// };
+// transversal.generateRelationalField(
+// 	'User',
+// 	'messages',
+// 	'Message',
+// 	customResolver
+// );
 
 const custom = {
 	name: 'String',
@@ -108,8 +108,8 @@ const args = {
 };
 
 // Generate resolver and query
-transversal.generateQuery('getUsers', 'User', resolver, args);
-// transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
+// transversal.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {
