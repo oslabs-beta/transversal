@@ -11,8 +11,9 @@ const userSchema = new Schema({
 const User = mongoose.model('User', userSchema);
 
 const messageSchema = new Schema({
+	userId: { type: mongoose.Schema.Types.ObjectId },
 	message: { type: String, required: true },
-	date: { type: Date, default: Date.now },
+	// date: { type: Date, default: Date.now },
 });
 
 const Message = mongoose.model('Message', messageSchema);
