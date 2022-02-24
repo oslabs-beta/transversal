@@ -12,6 +12,7 @@ class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
+	#ReusableFieldSchema;
 	#ResolverSchema;
 	cache;
 
@@ -19,6 +20,7 @@ class Transversal {
 		this.cache = new TransversalCache();
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
+		this.#ReusableFieldSchema = {};
 		this.#ResolverSchema = {
 			query: {
 				name: 'RootQuery',
@@ -105,12 +107,82 @@ class Transversal {
 					};
 				}
 			});
+			//saving fields to be used later or elsewhere
+			this.#ReusableFieldSchema[model.modelName] = { ...fields };
 
 			this.#FieldSchema[model.modelName] = new GraphQLObjectType({
 				name: model.modelName,
 				fields: () => fields,
 			});
 		});
+	}
+
+	generateRelationalField(
+		fieldSchemaName,
+		fieldName,
+		relation,
+		resolver,
+		args
+	) {
+		//find fieldSchema
+		const newType = this.#ReusableFieldSchema[fieldSchemaName];
+		newType[fieldName] = {
+			type: new GraphQLList(this.#FieldSchema[relation]),
+			args: args ? args : null,
+			resolve: resolver,
+		};
+
+		this.#FieldSchema[fieldSchemaName] = new GraphQLObjectType({
+			name: fieldSchemaName,
+			fields: () => newType,
+		});
+	}
+
+	generateCustomFieldSchema(customGQL, customName) {
+		const traverse = (gqlObj) => {
+			const fields = {};
+			//useto hold non graphql types representing arrays and objects for string generation
+			const reusableFields = {};
+			Object.keys(gqlObj).forEach((customField) => {
+				if (typeof gqlObj[customField] !== 'object') {
+					fields[customField] = {
+						type: this.#type[gqlObj[customField]],
+					};
+					return fields;
+				} else if (Array.isArray(gqlObj[customField])) {
+					if (typeof gqlObj[customField][0] !== 'object') {
+						fields[customField] = {
+							type: new GraphQLList(this.#FieldSchema[gqlObj[customField][0]]),
+						};
+					} else {
+						const result = traverse(gqlObj[customField][0]);
+						const obj = new GraphQLObjectType({
+							name: customField,
+							fields: () => result,
+						});
+						fields[customField] = { type: new GraphQLList(obj) };
+					}
+				} else {
+					// 	//new graphlQLObjectType
+					const result = traverse(gqlObj[customField]);
+					const obj = new GraphQLObjectType({
+						name: customField,
+						fields: () => result,
+					});
+				}
+				return fields;
+			});
+			return fields;
+		};
+		const customFields = traverse(customGQL);
+		//saving fields to be used later or elsewhere
+		this.#ReusableFieldSchema[customName] = { ...customFields };
+
+		this.#FieldSchema[customName] = new GraphQLObjectType({
+			name: customName,
+			fields: () => customFields,
+		});
+		// console.log(this.#FieldSchema[customName]._fields());
 	}
 
 	/**
@@ -130,7 +202,6 @@ class Transversal {
 			// mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
-
 		// Generate gql query string
 		const gql = this.createGQLString(
 			queryName,

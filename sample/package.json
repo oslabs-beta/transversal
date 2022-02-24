@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "NODE_ENV=production node server/server.js",
 		"build": "NODE_ENV=production webpack",
-		"dev": "NODE_ENV=development nodemon server/server.js & NODE_ENV=development webpack-dev-server --open"
+		"dev": "concurrently \"NODE_ENV=development nodemon server/server.js\" \"NODE_ENV=development webpack-dev-server --open\""
 	},
 	"author": "Han Kim",
 	"license": "ISC",

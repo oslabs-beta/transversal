@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
 const Transversal = require('../Transversal');
-const { User } = require('./models/mongoModel');
+const { User, Message } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
 const http = require('http');
@@ -54,7 +54,7 @@ mongoose
  * Instantiate Transversal and cache
  */
 
-const transversal = new Transversal([User]);
+const transversal = new Transversal([User, Message]);
 
 /**
  * Test code... run redis-server / redis-cli
@@ -77,6 +77,25 @@ app.use('/transversal', transversal.cache.cacheMiddleware);
 // Generate field schema
 transversal.generateFieldSchema();
 
+// const customResolver = async (parent, args) => {
+// 	const messages = await Message.find({ userId: parent._id });
+// 	return messages;
+// };
+// transversal.generateRelationalField(
+// 	'User',
+// 	'messages',
+// 	'Message',
+// 	customResolver
+// );
+
+const custom = {
+	name: 'String',
+	age: 'Number',
+	list: [{ name: 'String', age: 'Number', user: { name: 'String' } }],
+};
+
+transversal.generateCustomFieldSchema(custom, 'CustomQuery');
+
 // Custom resolver and arguments
 const resolver = async (parent, args) => {
 	const users = await User.find({ age: args.age });
@@ -85,11 +104,12 @@ const resolver = async (parent, args) => {
 
 const args = {
 	age: { type: GraphQLInt },
-	height: { type: GraphQLInt },
+	// height: { type: GraphQLInt },
 };
 
 // Generate resolver and query
-transversal.generateQuery('getUsers', 'User', resolver, args);
+// transversal.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {
