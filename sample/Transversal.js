@@ -1,4 +1,3 @@
-
 const {
 	GraphQLObjectType,
 	GraphQLList,
@@ -13,14 +12,12 @@ class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
-	#ReusableFieldSchema;
 	#ResolverSchema;
 
 	constructor(MongoModels, redisClient) {
 		this.cache = new TransversalCache(redisClient);
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
-		this.#ReusableFieldSchema = {};
 		this.#ResolverSchema = {
 			query: {
 				name: 'RootQuery',
@@ -107,8 +104,6 @@ class Transversal {
 					};
 				}
 			});
-			//saving fields to be used later or elsewhere
-			// this.#ReusableFieldSchema[model.modelName] = { ...fields };
 
 			this.#FieldSchema[model.modelName] = new GraphQLObjectType({
 				name: model.modelName,
@@ -119,27 +114,6 @@ class Transversal {
 				'Default Field Added =>',
 				this.#FieldSchema[model.modelName]._fields()
 			);
-		});
-	}
-
-	generateRelationalField(
-		fieldSchemaName,
-		fieldName,
-		relation,
-		resolver,
-		args
-	) {
-		//find fieldSchema
-		const newType = this.#ReusableFieldSchema[fieldSchemaName];
-		newType[fieldName] = {
-			type: new GraphQLList(this.#FieldSchema[relation]),
-			args: args ? args : null,
-			resolve: resolver,
-		};
-
-		this.#FieldSchema[fieldSchemaName] = new GraphQLObjectType({
-			name: fieldSchemaName,
-			fields: () => newType,
 		});
 	}
 
@@ -178,6 +152,8 @@ class Transversal {
 						});
 						// Assign converted GraphQL type object to List type
 						fields[field] = { type: new GraphQLList(type) };
+						// Register schema in this.#FieldSchema
+						this.#FieldSchema[field] = type;
 					}
 				} else {
 					// If object, make recurvie call to conver nested data types
@@ -188,14 +164,13 @@ class Transversal {
 					});
 					// Assign converted GraphQL type object
 					fields[field] = { type: type };
+					// Register schema in this.#FieldSchema
+					this.#FieldSchema[field] = type;
 				}
 			});
 			return fields;
 		};
 		const customFields = traverse(customSchema);
-
-		// Saving fields to be used later or elsewhere
-		this.#ReusableFieldSchema[customSchemaName] = { ...customFields };
 
 		// Assign final GraphQL type object to FieldSchema
 		this.#FieldSchema[customSchemaName] = new GraphQLObjectType({
@@ -234,9 +209,12 @@ class Transversal {
 		);
 
 		this.gql[queryName] = gql;
+
+		console.log('Registered gql query', this.gql);
 	}
 
 	createGQLString(name, type, fieldSchema, args) {
+		// Conver arguments into gql argument strings
 		const argStrings = !args
 			? null
 			: Object.keys(args).reduce(
@@ -253,13 +231,23 @@ class Transversal {
 					['', '']
 			  );
 
-		const fieldString = Object.keys(fieldSchema._fields).reduce(
-			(str, field, idx) => {
-				str += `${field} \n`;
+		// Helper function to convert fields to gql field strings
+		const getFieldString = (fields) => {
+			return Object.keys(fields).reduce((str, field) => {
+				if (Object.values(this.#type).includes(fields[field].type)) {
+					str += `${field} \n`;
+				} else if (field in this.#FieldSchema) {
+					str += `${field} {${getFieldString(
+						this.#FieldSchema[field]._fields
+					)}}`;
+				} else {
+					throw new Error(`Failed to identify the schema for field, ${field}`);
+				}
 				return str;
-			},
-			''
-		);
+			}, '');
+		};
+
+		const fieldString = getFieldString(fieldSchema._fields);
 
 		const gqlQuery = args
 			? `
@@ -279,6 +267,7 @@ class Transversal {
 
 		return gqlQuery;
 	}
+
 	findGqlKey(gql) {
 		return Object.keys(this.gql).find((key) => this.gql[key] === gql);
 	}

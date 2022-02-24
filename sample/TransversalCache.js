@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 
 class TransversalCache {
 	constructor(redisClient) {
-		
 		/**
 		 * Connect Redis Client
 		 */
@@ -13,9 +12,9 @@ class TransversalCache {
 
 		/**
 		 * Middleware
-		 * @param {*} req 
-		 * @param {*} res 
-		 * @returns 
+		 * @param {*} req
+		 * @param {*} res
+		 * @returns
 		 */
 		this.cacheMiddleware = async (req, res) => {
 			const request = async (endpoint, gql, variables) => {
@@ -54,8 +53,6 @@ class TransversalCache {
 			} else {
 				return res.status(200).json({ cache: cache });
 			}
-
-			return res.status(200).json({ response: 'hi' });
 		};
 	}
 
