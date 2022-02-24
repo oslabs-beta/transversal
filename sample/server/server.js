@@ -51,54 +51,21 @@ mongoose
 	.catch((err) => console.log(err));
 
 /**
- * Instantiate Transversal and cache
+ * Instantiate Transversal and cache middleware
  */
-
 const transversal = new Transversal([User, Message]);
-
-/**
- * TODO: Build transversal api to handle cache option
- * Then, make a call to graphql
- */
 app.use('/transversal', transversal.cache.cacheMiddleware);
 
-// Generate field schema
+// Generate basic field schema
 transversal.generateFieldSchema();
 
-// const customResolver = async (parent, args) => {
-// 	const messages = await Message.find({ userId: parent._id });
-// 	return messages;
-// };
-// transversal.generateRelationalField(
-// 	'User',
-// 	'messages',
-// 	'Message',
-// 	customResolver
-// );
-
-const custom = {
-	name: 'String',
-	age: 'Number',
-	list: [{ name: 'String', age: 'Number', user: { name: 'String' } }],
-};
-
-transversal.generateCustomFieldSchema(custom, 'CustomQuery');
-
-// Custom resolver and arguments
-const resolver = async (parent, args) => {
-	const users = await User.find({ age: args.age, height: args.height });
-	console.log(users);
-	return users;
-};
-
+// Generate resolver
 const args = {
 	age: { type: GraphQLInt },
-	// height: { type: GraphQLInt },
+	height: { type: GraphQLInt },
 };
 
-// Generate resolver and query
-// transversal.generateQuery('getUsers', 'User', resolver, args);
-transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
+transversal.generateQuery('getUsers', 'User', resolver, args);
 
 // Stringify object with methods
 function replacer(key, value) {

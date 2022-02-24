@@ -14,7 +14,6 @@ class Transversal {
 	#FieldSchema;
 	#ReusableFieldSchema;
 	#ResolverSchema;
-	cache;
 
 	constructor(MongoModels) {
 		this.cache = new TransversalCache();
