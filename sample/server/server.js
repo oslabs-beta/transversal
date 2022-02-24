@@ -84,7 +84,7 @@ const userResolver = async (parent, args) => {
 	return users;
 };
 
-transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+// transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
 
 /**
  *

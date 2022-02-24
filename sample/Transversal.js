@@ -1,3 +1,4 @@
+const e = require('express');
 const {
 	GraphQLObjectType,
 	GraphQLList,
@@ -114,10 +115,10 @@ class Transversal {
 				fields: () => fields,
 			});
 
-			console.log(
-				'Default Field Added =>',
-				this.#FieldSchema[model.modelName]._fields()
-			);
+			// console.log(
+			// 	'Default Field Added =>',
+			// 	this.#FieldSchema[model.modelName]._fields()
+			// );
 		});
 	}
 
@@ -151,6 +152,7 @@ class Transversal {
 		// Helper function to traverse schema and convert data type to GraphQL types
 		const traverse = (schema) => {
 			const fields = {};
+			const reusableFields = {};
 
 			Object.keys(schema).forEach((field) => {
 				// If primitive, conver to GraphQL type immediately
@@ -158,6 +160,8 @@ class Transversal {
 					fields[field] = {
 						type: this.#type[schema[field]],
 					};
+
+					reusableFields[field] = schema[field];
 				} else if (Array.isArray(schema[field])) {
 					// If array, check if array include ONE valid type object
 					if (schema[field].length === 0 || schema[field].length > 1) {
@@ -173,38 +177,42 @@ class Transversal {
 						const result = traverse(schema[field][0]);
 						const type = new GraphQLObjectType({
 							name: field,
-							fields: () => result,
+							fields: () => result.fields,
 						});
 						// Assign converted GraphQL type object to List type
 						fields[field] = { type: new GraphQLList(type) };
+						reusableFields[field] = [result.reusableFields];
 					}
 				} else {
 					// If object, make recurvie call to conver nested data types
 					const result = traverse(schema[field]);
 					const type = new GraphQLObjectType({
 						name: field,
-						fields: () => result,
+						fields: () => result.fields,
 					});
 					// Assign converted GraphQL type object
 					fields[field] = { type: type };
+					reusableFields[field] = result.reusableFields;
 				}
 			});
-			return fields;
+			return { fields: fields, reusableFields: reusableFields };
 		};
 		const customFields = traverse(customSchema);
 
 		// Saving fields to be used later or elsewhere
-		this.#ReusableFieldSchema[customSchemaName] = { ...customFields };
+		this.#ReusableFieldSchema[customSchemaName] = {
+			...customFields.reusableFields,
+		};
 
 		// Assign final GraphQL type object to FieldSchema
 		this.#FieldSchema[customSchemaName] = new GraphQLObjectType({
 			name: customSchemaName,
-			fields: () => customFields,
+			fields: () => customFields.fields,
 		});
-		console.log(
-			'Custom Field Added =>',
-			this.#FieldSchema[customSchemaName]._fields()
-		);
+		// console.log(
+		// 	'Custom Field Added =>',
+		// 	this.#FieldSchema[customSchemaName]._fields()
+		// );
 	}
 
 	/**
@@ -252,13 +260,32 @@ class Transversal {
 					['', '']
 			  );
 
-		const fieldString = Object.keys(fieldSchema._fields).reduce(
-			(str, field, idx) => {
-				str += `${field} \n`;
+		const recurse = (recurseObj) => {
+			const generateString = (obj) => {
+				let str = '';
+				Object.keys(obj).forEach((field) => {
+					if (typeof obj[field] !== 'object') {
+						str += `${field} \n`;
+					} else if (Array.isArray(obj[field])) {
+						str += `${field}{ \n ${generateString(obj[field][0])}} \n`;
+					} else {
+						str += `${field}{ \n ${generateString(obj[field])}} \n`;
+					}
+				});
 				return str;
-			},
-			''
-		);
+			};
+			return generateString(recurseObj);
+		};
+
+		// const fieldString = Object.keys(fieldSchema._fields).reduce(
+		// 	(str, field, idx) => {
+		// 		str += `${field} \n`;
+		// 		return str;
+		// 	},
+		// 	''
+		// );
+		const fieldString = recurse(this.#ReusableFieldSchema[fieldSchema]);
+		console.log(fieldString);
 
 		const gqlQuery = args
 			? `
