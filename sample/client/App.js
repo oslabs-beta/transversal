@@ -45,7 +45,7 @@ const App = () => {
 				age: 10,
 				height: 10,
 			},
-			true
+			false
 		);
 
 		console.log('Custom User Response: ', customUsers);
