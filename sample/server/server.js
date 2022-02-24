@@ -65,6 +65,7 @@ const redisClient = redis.createClient({
  */
 
 const transversal = new Transversal([User, Message], redisClient);
+app.use('/transversal', transversal.cache.cacheMiddleware);
 
 /**
  * Basic Query Set Up
@@ -99,6 +100,9 @@ const customSchema = {
 	school: {
 		name: 'String',
 		year: 'Number',
+		code: {
+			code: 'String',
+		},
 	},
 	messages: [{ message: 'String' }],
 };
@@ -114,6 +118,9 @@ const customResolver = async (parent, args) => {
 		user.school = {
 			name: 'Hello Scool',
 			year: 1900,
+			code: {
+				code: 'D2F',
+			},
 		};
 	});
 

@@ -26,6 +26,7 @@ const App = () => {
 
 		console.log('GQL Object from server..', gqlObj);
 
+		// Basic user query
 		const users = await gqlObj.transversalQuery(
 			gqlObj.gql.getUsers,
 			{
@@ -34,7 +35,20 @@ const App = () => {
 			},
 			true
 		);
-		console.log('Response: ', users);
+
+		console.log('Default User Response: ', users);
+
+		// Custom user query
+		const customUsers = await gqlObj.transversalQuery(
+			gqlObj.gql.getCustom,
+			{
+				age: 10,
+				height: 10,
+			},
+			false
+		);
+
+		console.log('Custom User Response: ', customUsers);
 	});
 
 	return (
