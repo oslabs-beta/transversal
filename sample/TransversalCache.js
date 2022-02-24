@@ -3,12 +3,21 @@ const Transversal = require('./Transversal');
 const fetch = require('node-fetch');
 
 class TransversalCache {
-	constructor() {
-		this.client = (() => {
-			const client = redis.createClient();
-			client.connect();
-			return client;
-		})();
+	constructor(redisClient) {
+		
+		/**
+		 * Connect Redis Client
+		 */
+		this.client = redisClient;
+		this.client.connect();
+		this.client.on('error', (err) => console.log('Redis Client Error', err));
+
+		/**
+		 * Middleware
+		 * @param {*} req 
+		 * @param {*} res 
+		 * @returns 
+		 */
 		this.cacheMiddleware = async (req, res) => {
 			const request = async (endpoint, gql, variables) => {
 				const res = await fetch(endpoint, {
