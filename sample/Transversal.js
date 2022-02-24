@@ -1,3 +1,4 @@
+
 const {
 	GraphQLObjectType,
 	GraphQLList,
@@ -15,8 +16,8 @@ class Transversal {
 	#ReusableFieldSchema;
 	#ResolverSchema;
 
-	constructor(MongoModels) {
-		this.cache = new TransversalCache();
+	constructor(MongoModels, redisClient) {
+		this.cache = new TransversalCache(redisClient);
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
 		this.#ReusableFieldSchema = {};
