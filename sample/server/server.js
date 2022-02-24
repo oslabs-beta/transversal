@@ -52,7 +52,6 @@ mongoose
 	.then(() => console.log('Connected to Mongo DB.'))
 	.catch((err) => console.log(err));
 
-
 /**
  * Initialize Redis Client
  */
@@ -62,65 +61,77 @@ mongoose
 // });
 
 /**
- * Instantiate Transversal and cache
+ * Instantiate Transversal and cache middleware
  */
 
 const transversal = new Transversal([User, Message]);
 
 /**
- * Test code... run redis-server / redis-cli
+ * Basic Query Set Up
  */
-// async function test() {
-// 	await transversal.cache.set('name', 'kim');
-// 	const myName = await transversal.cache.get('name');
-// 	console.log('hi', myName);
-// 	return myName;
-// }
-
-// test();
-
-/**
- * TODO: Build transversal api to handle cache option
- * Then, make a call to graphql
- */
-app.use('/transversal', transversal.cache.cacheMiddleware);
-
-// Generate field schema
+// Generate basic field schema
 transversal.generateFieldSchema();
 
-// const customResolver = async (parent, args) => {
-// 	const messages = await Message.find({ userId: parent._id });
-// 	return messages;
-// };
-// transversal.generateRelationalField(
-// 	'User',
-// 	'messages',
-// 	'Message',
-// 	customResolver
-// );
-
-const custom = {
-	name: 'String',
-	age: 'Number',
-	messages: [{ message: 'String' }],
+// Generate resolver
+const userArgs = {
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
 };
 
-transversal.generateCustomFieldSchema(custom, 'CustomQuery');
-
-// Custom resolver and arguments
-const resolver = async (parent, args) => {
-	const users = await User.find({ age: args.age });
+// Resolver and arguments
+const userResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
 	return users;
 };
 
-const args = {
+transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+
+/**
+ *
+ * Custom QUery Set Up
+ */
+// Generate custom field schema
+const customSchema = {
+	firstName: 'String',
+	lastName: 'String',
+	age: 'Number',
+	height: 'Number',
+	school: {
+		name: 'String',
+		year: 'Number',
+	},
+	messages: [{ message: 'String' }],
+};
+
+transversal.generateCustomFieldSchema(customSchema, 'customQuery');
+
+// Resolver and arguments
+const customResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
+	const messages = await Message.find({});
+	users.map((user) => {
+		user.messages = messages;
+		user.school = {
+			name: 'Hello Scool',
+			year: 1900,
+		};
+	});
+
+	return users;
+};
+
+const customArgs = {
 	age: { type: GraphQLInt },
-	// height: { type: GraphQLInt },
+	height: { type: GraphQLInt },
 };
 
 // Generate resolver and query
-transversal.generateQuery('getUsers', 'User', resolver, args);
-transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
+transversal.generateQuery(
+	'getCustom',
+	'customQuery',
+	customResolver,
+	customArgs
+);
 
 // Stringify object with methods
 function replacer(key, value) {
