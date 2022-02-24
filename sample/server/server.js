@@ -56,16 +56,72 @@ mongoose
 const transversal = new Transversal([User, Message]);
 app.use('/transversal', transversal.cache.cacheMiddleware);
 
+/**
+ * Basic Query Set Up
+ */
 // Generate basic field schema
 transversal.generateFieldSchema();
 
 // Generate resolver
-const args = {
+const userArgs = {
 	age: { type: GraphQLInt },
 	height: { type: GraphQLInt },
 };
 
-transversal.generateQuery('getUsers', 'User', resolver, args);
+// Resolver and arguments
+const userResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
+	return users;
+};
+
+transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+
+/**
+ *
+ * Custom QUery Set Up
+ */
+// Generate custom field schema
+const customSchema = {
+	firstName: 'String',
+	lastName: 'String',
+	age: 'Number',
+	height: 'Number',
+	school: {
+		name: 'String',
+		year: 'Number',
+	},
+	messages: [{ message: 'String' }],
+};
+
+transversal.generateCustomFieldSchema(customSchema, 'customQuery');
+
+// Resolver and arguments
+const customResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
+	const messages = await Message.find({});
+	users.map((user) => {
+		user.messages = messages;
+		user.school = {
+			name: 'Hello Scool',
+			year: 1900,
+		};
+	});
+
+	return users;
+};
+
+const customArgs = {
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
+};
+
+// Generate resolver and query
+transversal.generateQuery(
+	'getCustom',
+	'customQuery',
+	customResolver,
+	customArgs
+);
 
 // Stringify object with methods
 function replacer(key, value) {

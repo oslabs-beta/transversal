@@ -34,6 +34,7 @@ const App = () => {
 			},
 			true
 		);
+		console.log('Response: ', users);
 	});
 
 	return (
