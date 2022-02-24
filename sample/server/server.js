@@ -57,15 +57,15 @@ mongoose
  * Initialize Redis Client
  */
 
-const redisClient = redis.createClient({
-	url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379'
-});
+// const redisClient = redis.createClient({
+// 	url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379'
+// });
 
 /**
  * Instantiate Transversal and cache
  */
 
-const transversal = new Transversal([User, Message], redisClient);
+const transversal = new Transversal([User, Message]);
 
 /**
  * Test code... run redis-server / redis-cli
@@ -102,7 +102,7 @@ transversal.generateFieldSchema();
 const custom = {
 	name: 'String',
 	age: 'Number',
-	list: [{ name: 'String', age: 'Number', user: { name: 'String' } }],
+	messages: [{ message: 'String' }],
 };
 
 transversal.generateCustomFieldSchema(custom, 'CustomQuery');
@@ -119,7 +119,7 @@ const args = {
 };
 
 // Generate resolver and query
-// transversal.generateQuery('getUsers', 'User', resolver, args);
+transversal.generateQuery('getUsers', 'User', resolver, args);
 transversal.generateQuery('getCustom', 'CustomQuery', resolver, args);
 
 // Stringify object with methods

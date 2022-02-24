@@ -1,4 +1,3 @@
-
 const {
 	GraphQLObjectType,
 	GraphQLList,
@@ -149,7 +148,6 @@ class Transversal {
 					fields[customField] = {
 						type: this.#type[gqlObj[customField]],
 					};
-					return fields;
 				} else if (Array.isArray(gqlObj[customField])) {
 					if (typeof gqlObj[customField][0] !== 'object') {
 						fields[customField] = {
