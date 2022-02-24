@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,6 +8,7 @@ const Transversal = require('../Transversal');
 const { User, Message } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
+const redis = require('redis');
 const http = require('http');
 const app = express();
 const server = http.createServer(app);
@@ -50,11 +52,20 @@ mongoose
 	.then(() => console.log('Connected to Mongo DB.'))
 	.catch((err) => console.log(err));
 
+
+/**
+ * Initialize Redis Client
+ */
+
+const redisClient = redis.createClient({
+	url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379'
+});
+
 /**
  * Instantiate Transversal and cache
  */
 
-const transversal = new Transversal([User, Message]);
+const transversal = new Transversal([User, Message], redisClient);
 
 /**
  * Test code... run redis-server / redis-cli
