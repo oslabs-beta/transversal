@@ -1,5 +1,4 @@
 const redis = require('redis');
-const Transversal = require('./Transversal');
 const fetch = require('node-fetch');
 
 class TransversalCache {
@@ -46,6 +45,9 @@ class TransversalCache {
 					req.body.query,
 					req.body.variables
 				);
+				/**
+				 * TODO: Parse gql and grab schema name
+				 */
 				await this.set('data', JSON.stringify(data));
 
 				return res.status(200).json(data);
@@ -53,9 +55,6 @@ class TransversalCache {
 				return res.status(200).json({ cache: cache });
 			}
 
-			// await this.set('name', 'kim');
-			// const myName = await this.get('name');
-			// console.log('request', myName);
 			return res.status(200).json({ response: 'hi' });
 		};
 	}
