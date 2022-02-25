@@ -31,16 +31,18 @@ class TransversalCache {
 						variables: variables,
 					}),
 				})
-					.then((res) => res.json())
-					.then((data) => data);
+					.then((res) => {console.log('This is res:', res); res.json();})
+					.then((data) => console.log('Data is: ', data));
 				return res;
 			};
 
 			console.log('cache request from frontend');
 
+			// TODO: Need the correct query, replace 'data'
 			let cache = await this.get('data');
 			cache = JSON.parse(cache);
-			if (!cache) {
+			// Does the key exist in Redis Database
+			if (this.client.exists('data') === 0) {
 				const data = await request(
 					'http://localhost:3000/graphql',
 					req.body.query,
