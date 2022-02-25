@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
 // Parse object with methods
-
 function parser(name, val) {
 	if (
 		val &&
@@ -22,26 +21,34 @@ const App = () => {
 	socket.on('connect', () => console.log(socket.id));
 
 	socket.on('transverse', async (gql) => {
+		// Store gql object from the server
 		const gqlObj = JSON.parse(gql, parser);
+
 		console.log('GQL Object from server..', gqlObj);
 
-		// const users = await gqlObj.transversalQuery(
-		// 	gqlObj.gql.getUsers,
-		// 	{
-		// 		age: 10,
-		// 		height: 10,
-		// 	},
-		// 	true
-		// );
+		// Basic user query
+		const users = await gqlObj.transversalQuery(
+			gqlObj.gql.getUsers,
+			{
+				age: 10,
+				height: 10,
+			},
+			true
+		);
 
-		const custom = await gqlObj.transversalQuery(
+		console.log('Default User Response: ', users);
+
+		// Custom user query
+		const customUsers = await gqlObj.transversalQuery(
 			gqlObj.gql.getCustom,
 			{
 				age: 10,
-			}
+				height: 10,
+			},
+			false
 		);
 
-		console.log(custom);
+		console.log('Custom User Response: ', customUsers);
 	});
 
 	return (

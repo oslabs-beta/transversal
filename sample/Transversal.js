@@ -1,4 +1,3 @@
-
 const {
 	GraphQLObjectType,
 	GraphQLList,
@@ -13,15 +12,12 @@ class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
-	#ReusableFieldSchema;
 	#ResolverSchema;
-	cache;
 
 	constructor(MongoModels, redisClient) {
 		this.cache = new TransversalCache(redisClient);
 		this.#MongoModels = MongoModels;
 		this.#FieldSchema = {};
-		this.#ReusableFieldSchema = {};
 		this.#ResolverSchema = {
 			query: {
 				name: 'RootQuery',
@@ -108,82 +104,83 @@ class Transversal {
 					};
 				}
 			});
-			//saving fields to be used later or elsewhere
-			this.#ReusableFieldSchema[model.modelName] = { ...fields };
 
 			this.#FieldSchema[model.modelName] = new GraphQLObjectType({
 				name: model.modelName,
 				fields: () => fields,
 			});
+
+			console.log(
+				'Default Field Added =>',
+				this.#FieldSchema[model.modelName]._fields()
+			);
 		});
 	}
 
-	generateRelationalField(
-		fieldSchemaName,
-		fieldName,
-		relation,
-		resolver,
-		args
-	) {
-		//find fieldSchema
-		const newType = this.#ReusableFieldSchema[fieldSchemaName];
-		newType[fieldName] = {
-			type: new GraphQLList(this.#FieldSchema[relation]),
-			args: args ? args : null,
-			resolve: resolver,
-		};
-
-		this.#FieldSchema[fieldSchemaName] = new GraphQLObjectType({
-			name: fieldSchemaName,
-			fields: () => newType,
-		});
-	}
-
-	generateCustomFieldSchema(customGQL, customName) {
-		const traverse = (gqlObj) => {
+	/**
+	 *
+	 * @param {object} customSchema Custom schema object
+	 * @param {string} customSchemaName Name of custom schema
+	 */
+	generateCustomFieldSchema(customSchema, customSchemaName) {
+		// Helper function to traverse schema and convert data type to GraphQL types
+		const traverse = (schema) => {
 			const fields = {};
-			//useto hold non graphql types representing arrays and objects for string generation
-			const reusableFields = {};
-			Object.keys(gqlObj).forEach((customField) => {
-				if (typeof gqlObj[customField] !== 'object') {
-					fields[customField] = {
-						type: this.#type[gqlObj[customField]],
+
+			Object.keys(schema).forEach((field) => {
+				// If primitive, conver to GraphQL type immediately
+				if (typeof schema[field] !== 'object') {
+					fields[field] = {
+						type: this.#type[schema[field]],
 					};
-					return fields;
-				} else if (Array.isArray(gqlObj[customField])) {
-					if (typeof gqlObj[customField][0] !== 'object') {
-						fields[customField] = {
-							type: new GraphQLList(this.#FieldSchema[gqlObj[customField][0]]),
-						};
+				} else if (Array.isArray(schema[field])) {
+					// If array, check if array include ONE valid type object
+					if (schema[field].length === 0 || schema[field].length > 1) {
+						throw new Error(
+							`Only one schema must be passed into array for ${field}`
+						);
+					} else if (typeof schema[field][0] !== 'object') {
+						throw new Error(
+							`Invalid schema type passed into array for ${field}`
+						);
 					} else {
-						const result = traverse(gqlObj[customField][0]);
-						const obj = new GraphQLObjectType({
-							name: customField,
+						// When valid type object, make recursive call to convert nested data types
+						const result = traverse(schema[field][0]);
+						const type = new GraphQLObjectType({
+							name: field,
 							fields: () => result,
 						});
-						fields[customField] = { type: new GraphQLList(obj) };
+						// Assign converted GraphQL type object to List type
+						fields[field] = { type: new GraphQLList(type) };
+						// Register schema in this.#FieldSchema
+						this.#FieldSchema[field] = type;
 					}
 				} else {
-					// 	//new graphlQLObjectType
-					const result = traverse(gqlObj[customField]);
-					const obj = new GraphQLObjectType({
-						name: customField,
+					// If object, make recurvie call to conver nested data types
+					const result = traverse(schema[field]);
+					const type = new GraphQLObjectType({
+						name: field,
 						fields: () => result,
 					});
+					// Assign converted GraphQL type object
+					fields[field] = { type: type };
+					// Register schema in this.#FieldSchema
+					this.#FieldSchema[field] = type;
 				}
-				return fields;
 			});
 			return fields;
 		};
-		const customFields = traverse(customGQL);
-		//saving fields to be used later or elsewhere
-		this.#ReusableFieldSchema[customName] = { ...customFields };
+		const customFields = traverse(customSchema);
 
-		this.#FieldSchema[customName] = new GraphQLObjectType({
-			name: customName,
+		// Assign final GraphQL type object to FieldSchema
+		this.#FieldSchema[customSchemaName] = new GraphQLObjectType({
+			name: customSchemaName,
 			fields: () => customFields,
 		});
-		// console.log(this.#FieldSchema[customName]._fields());
+		console.log(
+			'Custom Field Added =>',
+			this.#FieldSchema[customSchemaName]._fields()
+		);
 	}
 
 	/**
@@ -212,9 +209,12 @@ class Transversal {
 		);
 
 		this.gql[queryName] = gql;
+
+		console.log('Registered gql query', this.gql);
 	}
 
 	createGQLString(name, type, fieldSchema, args) {
+		// Conver arguments into gql argument strings
 		const argStrings = !args
 			? null
 			: Object.keys(args).reduce(
@@ -231,13 +231,23 @@ class Transversal {
 					['', '']
 			  );
 
-		const fieldString = Object.keys(fieldSchema._fields).reduce(
-			(str, field, idx) => {
-				str += `${field} \n`;
+		// Helper function to convert fields to gql field strings
+		const getFieldString = (fields) => {
+			return Object.keys(fields).reduce((str, field) => {
+				if (Object.values(this.#type).includes(fields[field].type)) {
+					str += `${field} \n`;
+				} else if (field in this.#FieldSchema) {
+					str += `${field} {${getFieldString(
+						this.#FieldSchema[field]._fields
+					)}}`;
+				} else {
+					throw new Error(`Failed to identify the schema for field, ${field}`);
+				}
 				return str;
-			},
-			''
-		);
+			}, '');
+		};
+
+		const fieldString = getFieldString(fieldSchema._fields);
 
 		const gqlQuery = args
 			? `
@@ -257,6 +267,7 @@ class Transversal {
 
 		return gqlQuery;
 	}
+
 	findGqlKey(gql) {
 		return Object.keys(this.gql).find((key) => this.gql[key] === gql);
 	}
