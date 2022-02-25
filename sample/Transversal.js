@@ -40,7 +40,16 @@ class Transversal {
 
 		this.gql = {};
 
-		this.transversalQuery = async (gql, variables, cacheOption = false) => {
+		this.transversalQuery = async (
+			gql,
+			variables,
+			cacheOption = false,
+			custom
+		) => {
+			if (custom) {
+				//use regex to extract the query name
+				//call the new method and pas in the name, args, and return fields
+			}
 			const request = async (endpoint, gql, variables) => {
 				const res = await fetch(endpoint, {
 					method: 'POST',
@@ -233,6 +242,61 @@ class Transversal {
 
 		// Helper function to convert fields to gql field strings
 		const getFieldString = (fields) => {
+			return Object.keys(fields).reduce((str, field) => {
+				if (Object.values(this.#type).includes(fields[field].type)) {
+					str += `${field} \n`;
+				} else if (field in this.#FieldSchema) {
+					str += `${field} {${getFieldString(
+						this.#FieldSchema[field]._fields
+					)}}`;
+				} else {
+					throw new Error(`Failed to identify the schema for field, ${field}`);
+				}
+				return str;
+			}, '');
+		};
+
+		const fieldString = getFieldString(fieldSchema._fields);
+
+		const gqlQuery = args
+			? `
+      query ${name}(${argStrings[0]}) {
+        ${name}(${argStrings[1]}) {
+					${fieldString}
+				}
+      }
+      `
+			: `
+      query ${name} {
+        ${name} {
+					${fieldString}
+				}
+      }
+      `;
+
+		return gqlQuery;
+	}
+
+	createCustomGQLReturnFields(name, args, string) {
+		// Conver arguments into gql argument strings
+		const argStrings = !args
+			? null
+			: Object.keys(args).reduce(
+					(res, arg, idx) => {
+						res[0] += `$${arg}: ${args[arg].type}`;
+						res[1] += `${arg}: $${arg}`;
+
+						if (Object.keys(args).length - 1 !== idx) {
+							res[0] += ', ';
+							res[1] += ', ';
+						}
+						return res;
+					},
+					['', '']
+			  );
+
+		// Helper function to convert fields to gql field strings
+		const getReturnFieldString = (fields) => {
 			return Object.keys(fields).reduce((str, field) => {
 				if (Object.values(this.#type).includes(fields[field].type)) {
 					str += `${field} \n`;
