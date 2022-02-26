@@ -30,8 +30,10 @@ const App = () => {
 		const users = await gqlObj.transversalQuery(
 			gqlObj.gql.getUsers,
 			{
-				age: 10,
-				height: 10,
+				// age: 10,
+				// height: 10,
+				age: 88,
+				// height: 10,
 			},
 			true
 		);

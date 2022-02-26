@@ -17,6 +17,8 @@ class TransversalCache {
 		 * @returns
 		 */
 		this.cacheMiddleware = async (req, res) => {
+
+			// Fetch Request to return response from /transversal endpoint
 			const request = async (endpoint, gql, variables) => {
 				const res = await fetch(endpoint, {
 					method: 'POST',
@@ -34,10 +36,20 @@ class TransversalCache {
 				return res;
 			};
 
-			console.log('cache request from frontend');
+			console.log('###cache request from frontend###');
+			console.log('===========================');
+			console.log('Req.body.query:', req.body.query);
+			console.log('===========================');
+			console.log('Req.body.variables:', req.body.variables);
+			console.log('===========================');
+			// Set Query string key for Redis
+			const query = `Query: ${JSON.stringify(req.body.query)}, Variables: ${JSON.stringify(req.body.variables)}`;
+			// Handle if req.body.query or req.body.variables is undefined
 
-			let cache = await this.get('data');
+			let cache = await this.get(query);
 			cache = JSON.parse(cache);
+
+			// If Cache turned off
 			if (!cache) {
 				const data = await request(
 					'http://localhost:3000/graphql',
@@ -47,15 +59,17 @@ class TransversalCache {
 				/**
 				 * TODO: Parse gql and grab schema name
 				 */
-				await this.set('data', JSON.stringify(data));
+				await this.set(query, JSON.stringify(data));
 
 				return res.status(200).json(data);
 			} else {
-				return res.status(200).json({ cache: cache });
+				// If Cache turned On
+				return res.status(200).json({ Query : query, Cached_Result: cache });
 			}
 		};
 	}
 
+	// Set key & vale in Redis
 	async set(name, data) {
 		try {
 			await this.client.set(name, data);
@@ -65,6 +79,7 @@ class TransversalCache {
 		}
 	}
 
+	// Get key & value in Redis
 	async get(name) {
 		try {
 			const data = await this.client.get(name);
