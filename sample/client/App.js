@@ -1,61 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { io } from 'socket.io-client';
-
-// Parse object with methods
-function parser(name, val) {
-	if (
-		val &&
-		typeof val === 'string' &&
-		(val.startsWith('function') || val.startsWith('async'))
-	) {
-		return new Function('return ' + val)();
-	} else {
-		return val;
-	}
-}
+import TransversalSocket from '../TransversalSocket';
+import Child from './Child';
 
 const App = () => {
-	const socket = io('http://localhost:3000');
+	const [trans, setTrans] = useState({ data: null });
 
-	socket.on('connect', () => console.log(socket.id));
+	const transSocket = new TransversalSocket('http://localhost:3000');
 
-	socket.on('transverse', async (gql) => {
-		// Store gql object from the server
-		const gqlObj = JSON.parse(gql, parser);
+	useEffect(() => {
+		transSocket.getTransversalInstance().then((data) => setTrans(data));
+	}, []);
 
-		console.log('GQL Object from server..', gqlObj);
-
-		// Basic user query
-		const users = await gqlObj.transversalQuery(
-			gqlObj.gql.getUsers,
-			{
-				age: 10,
-				height: 10,
-			},
-			true
-		);
-
-		console.log('Default User Response: ', users);
-
-		// Custom user query
-		const customUsers = await gqlObj.transversalQuery(
-			gqlObj.gql.getCustom,
-			{
-				age: 10,
-				height: 10,
-			},
-			false
-		);
-
-		console.log('Custom User Response: ', customUsers);
-	});
+	console.log('trans', trans);
 
 	return (
 		<Router>
 			<div className='container'>
 				<Routes>
-					<Route exact path='/' element={<h1>Hellow World!</h1>} />
+					<Route exact path='/' element={<Child trans={trans} />} />
 				</Routes>
 			</div>
 		</Router>
