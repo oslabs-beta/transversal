@@ -22,7 +22,11 @@ const Child = ({ trans }) => {
 					age: 10,
 					height: 10,
 				},
-				false
+				false,
+				`firstName 
+			lastName 
+			age 
+			height`
 			);
 			setCustomUsers(customUsers);
 		};
