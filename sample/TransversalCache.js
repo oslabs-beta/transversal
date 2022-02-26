@@ -6,9 +6,9 @@ class TransversalCache {
 		/**
 		 * Connect Redis Client
 		 */
-		this.client = redisClient;
-		this.client.connect();
-		this.client.on('error', (err) => console.log('Redis Client Error', err));
+		// this.client = redisClient;
+		// this.client.connect();
+		// this.client.on('error', (err) => console.log('Redis Client Error', err));
 
 		/**
 		 * Middleware

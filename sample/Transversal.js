@@ -40,7 +40,30 @@ class Transversal {
 
 		this.gql = {};
 
-		this.transversalQuery = async (gql, variables, cacheOption = false) => {
+		this.transversalQuery = async (
+			gql,
+			variables,
+			cacheOption = false,
+			custom
+		) => {
+			if (custom) {
+				const pattern = /^.+{$/gm;
+
+				const queryString = pattern.exec(gql);
+				const queryString2 = pattern.exec(gql);
+
+				gql =
+					queryString +
+					'\n' +
+					queryString2 +
+					'\n' +
+					custom +
+					'\n' +
+					'}' +
+					'\n' +
+					'}';
+			}
+
 			const request = async (endpoint, gql, variables) => {
 				const res = await fetch(endpoint, {
 					method: 'POST',
