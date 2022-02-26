@@ -32,10 +32,11 @@ class Transversal {
 				fields: {},
 			},
 		};
+
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
-			// mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
-			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
+			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription
 		});
 
 		this.gql = {};
@@ -139,7 +140,6 @@ class Transversal {
 			);
 		});
 	}
-
 	/**
 	 *
 	 * @param {object} customSchema Custom schema object
@@ -180,7 +180,7 @@ class Transversal {
 					}
 				} else {
 					// If object, make recurvie call to conver nested data types
-					const result = travers	e(schema[field]);
+					const result = traverse(schema[field]);
 					const type = new GraphQLObjectType({
 						name: field,
 						fields: () => result,
@@ -235,15 +235,31 @@ class Transversal {
 
 		console.log('Registered gql query', this.gql);
 	}
-	
 
-	generateMutation(mutationName, fieldSchemaName, resolver, args ) {
-		this.#ResolverSchema.mutation = new GraphQLObjectType({
+	generateMutation(mutationName, fieldSchemaName, resolver, args) {
+		this.#ResolverSchema.mutation.fields[mutationName] = {
+			type: this.#FieldSchema[fieldSchemaName],
+			args: args ? args : null,
+			resolve: resolver,
+		};
+
+		this.RootSchema = new GraphQLSchema({
+			query: new GraphQLObjectType(this.#ResolverSchema.query),
+			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
-	};
 
+		const gql = this.createGQLString(
+			mutationName,
+			'mutation',
+			this.#FieldSchema[fieldSchemaName],
+			args
+		);
 
+		this.gql[mutationName] = gql;
 
+		console.log('Registered gql mutation', this.gql);
+	}
 
 	createGQLString(name, type, fieldSchema, args) {
 		// Conver arguments into gql argument strings
@@ -280,16 +296,16 @@ class Transversal {
 		};
 
 		const fieldString = getFieldString(fieldSchema._fields);
-
-		const gqlQuery = args
-			? `
+		if (type === 'query') {
+			const gqlQuery = args
+				? `
       query ${name}(${argStrings[0]}) {
         ${name}(${argStrings[1]}) {
 					${fieldString}
 				}
       }
       `
-			: `
+				: `
       query ${name} {
         ${name} {
 					${fieldString}
@@ -297,7 +313,26 @@ class Transversal {
       }
       `;
 
-		return gqlQuery;
+			return gqlQuery;
+		} else {
+			const gqlMutation = args
+				? `
+		mutation ${name}(${argStrings[0]}) {
+			${name}(${argStrings[1]}) {
+				${fieldString}
+			}
+		}
+		`
+				: `
+		mutation ${name} {
+			${name} {
+				${fieldString}
+			}
+		}
+		`;
+
+			return gqlMutation;
+		}
 	}
 
 	findGqlKey(gql) {
