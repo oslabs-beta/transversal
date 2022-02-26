@@ -18,7 +18,7 @@ function parser(name, val) {
 const App = () => {
 	const socket = io('http://localhost:3000');
 
-	socket.on('connect', () => console.log(socket.id));
+	socket.on('connect', () => console.log('Socket connected on id: ',socket.id));
 
 	socket.on('transverse', async (gql) => {
 		// Store gql object from the server
@@ -30,10 +30,8 @@ const App = () => {
 		const users = await gqlObj.transversalQuery(
 			gqlObj.gql.getUsers,
 			{
-				// age: 10,
-				// height: 10,
-				age: 88,
-				// height: 10,
+				age: 10,
+				height: 10,
 			},
 			true
 		);

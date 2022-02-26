@@ -41,35 +41,35 @@ class TransversalCache {
 			console.log('Req.body.query:', req.body.query);
 			console.log('===========================');
 			console.log('Req.body.variables:', req.body.variables);
-			console.log('===========================');
+			console.log('___________________________');
+
+			// Throw error is req.body.query is undefined
+			if (req.body.query === '' || req.body.query === 'undefined' || req.body.query === null) return res.status(400).json({ Error: 'GraphQL query is empty. Please use an appropriate query string.'});
+
 			// Set Query string key for Redis
-			const query = `Query: ${JSON.stringify(req.body.query)}, Variables: ${JSON.stringify(req.body.variables)}`;
-			// Handle if req.body.query or req.body.variables is undefined
+			const query = `"query": ${JSON.stringify(req.body.query)}, "variables": ${JSON.stringify(req.body.variables)}`;
 
-			let cache = await this.get(query);
-			cache = JSON.parse(cache);
+			// Get cached data & checking if key/value exists
+			const cache = JSON.parse(await this.get(query));
 
-			// If Cache turned off
+			// If Cache does not exist
 			if (!cache) {
 				const data = await request(
 					'http://localhost:3000/graphql',
 					req.body.query,
 					req.body.variables
 				);
-				/**
-				 * TODO: Parse gql and grab schema name
-				 */
 				await this.set(query, JSON.stringify(data));
-
 				return res.status(200).json(data);
 			} else {
-				// If Cache turned On
-				return res.status(200).json({ Query : query, Cached_Result: cache });
+				// If Cache exists
+				// TODO: For production change this return to only 'cache'
+				return res.status(200).json({ cache: cache });
 			}
 		};
 	}
 
-	// Set key & vale in Redis
+	// Set key & value in Redis
 	async set(name, data) {
 		try {
 			await this.client.set(name, data);
