@@ -157,7 +157,7 @@ class Transversal {
 					}
 				} else {
 					// If object, make recurvie call to conver nested data types
-					const result = traverse(schema[field]);
+					const result = travers	e(schema[field]);
 					const type = new GraphQLObjectType({
 						name: field,
 						fields: () => result,
@@ -197,7 +197,7 @@ class Transversal {
 		// Generate RootSchema
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
-			// mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
 		// Generate gql query string
@@ -212,6 +212,15 @@ class Transversal {
 
 		console.log('Registered gql query', this.gql);
 	}
+	
+
+	generateMutation(mutationName, fieldSchemaName, resolver, args ) {
+		this.#ResolverSchema.mutation = new GraphQLObjectType({
+		});
+	};
+
+
+
 
 	createGQLString(name, type, fieldSchema, args) {
 		// Conver arguments into gql argument strings
