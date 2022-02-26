@@ -33,7 +33,8 @@ const App = () => {
 				age: 10,
 				height: 10,
 			},
-			false
+			false,
+			
 		);
 
 		console.log('Default User Response: ', users);
@@ -45,7 +46,11 @@ const App = () => {
 				age: 10,
 				height: 10,
 			},
-			false
+			false,
+			`firstName 
+			lastName 
+			age 
+			height`
 		);
 
 		console.log('Custom User Response: ', customUsers);
