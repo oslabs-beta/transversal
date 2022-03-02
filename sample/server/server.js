@@ -57,7 +57,7 @@ mongoose
  */
 
 const redisClient = redis.createClient({
-	url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379',
+	// url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379',
 });
 
 /**
@@ -79,13 +79,31 @@ const userArgs = {
 	height: { type: GraphQLInt },
 };
 
+const addUserArgs = {
+	firstName: { type: GraphQLString },
+	lastName: { type: GraphQLString },
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
+};
+
 // Resolver and arguments
 const userResolver = async (parent, args) => {
 	const users = await User.find({ age: args.age, height: args.height });
 	return users;
 };
 
+const addUserResolver = async (parent, args) => {
+	const users = await User.create({
+		firstName: args.firstName,
+		lastName: args.lastName,
+		age: args.age,
+		height: args.height,
+	});
+	return users;
+};
+
 transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+transversal.generateMutation('addUser', 'User', addUserResolver, addUserArgs);
 
 /**
  *
