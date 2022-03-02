@@ -64,7 +64,7 @@ const redisClient = redis.createClient({
  * Instantiate Transversal and cache middleware
  */
 
-const transversal = new Transversal([User, Message]);
+const transversal = new Transversal([User, Message], redisClient);
 app.use('/transversal', transversal.cache.cacheMiddleware);
 
 /**
