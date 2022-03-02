@@ -7,13 +7,15 @@ const {
 	GraphQLSchema,
 } = require('graphql');
 const TransversalCache = require('./TransversalCache');
-
 class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
 	#ResolverSchema;
-
+	/** 
+	 * @param {Object} MongoModel Schema
+	 * @param {Connection} Redis Client
+	 */
 	constructor(MongoModels, redisClient) {
 		this.cache = new TransversalCache(redisClient);
 		this.#MongoModels = MongoModels;
@@ -141,7 +143,7 @@ class Transversal {
 		});
 	}
 	/**
-	 *
+	 * Generate Custom Field Schema
 	 * @param {object} customSchema Custom schema object
 	 * @param {string} customSchemaName Name of custom schema
 	 */
@@ -208,6 +210,10 @@ class Transversal {
 
 	/**
 	 * Generate GraphQL query and save to this.RootSchema
+	 * @param {String} queryName Name of Query
+	 * @param {Object} FieldSchemaName Name of field schema
+	 * @param {Function} Resolver Callback Resolver Funciton
+	 * @param {Function} Args Callback Argument Function
 	 */
 	generateQuery(queryName, fieldSchemaName, resolver, args) {
 		// Generate Resolver
@@ -238,7 +244,13 @@ class Transversal {
 
 	/**
 	 * Generate GraphQL Mutation and save to this.RootSchema
+	 * @param {String} mutationName Name of Mutation
+	 * @param {Object} FieldSchemaName Name of field schema
+	 * @param {Function} Resolver Callback Resolver Funciton
+	 * @param {Function} Args Callback Argument Function
+	 * @returns
 	 */
+	
 	generateMutation(mutationName, fieldSchemaName, resolver, args) {
 		//Generate Resolver
 		this.#ResolverSchema.mutation.fields[mutationName] = {
@@ -261,14 +273,22 @@ class Transversal {
 			this.#FieldSchema[fieldSchemaName],
 			args
 		);
-
+		
 		this.gql[mutationName] = gql;
 
 		console.log('Registered gql mutation', this.gql);
 	}
 
+	/**
+	 * Creating GraphQL String
+	 * @param {String} name
+	 * @param {Object} type
+	 * @param {Object} fieldSchema 
+	 * @param {Function} args Callback Argument Function
+	 * @returns
+	 */
 	createGQLString(name, type, fieldSchema, args) {
-		// Conver arguments into gql argument strings
+		// Convert arguments into gql argument strings
 		const argStrings = !args
 			? null
 			: Object.keys(args).reduce(
@@ -340,6 +360,11 @@ class Transversal {
 		}
 	}
 
+	/** 
+	 * 
+	 * @param {*} gql 
+	 * @returns 
+	 */
 	findGqlKey(gql) {
 		return Object.keys(this.gql).find((key) => this.gql[key] === gql);
 	}

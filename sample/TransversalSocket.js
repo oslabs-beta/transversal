@@ -4,7 +4,11 @@ class TransversalSocket {
 	constructor(url) {
 		this.socket = io(url);
 	}
-
+	/**
+	 * Transversal Instance
+	 * @param {*} timeout 
+	 * @returns 
+	 */
 	getTransversalInstance(timeout = 10000) {
 		return new Promise((resolve, reject) => {
 			let timer;
@@ -16,7 +20,7 @@ class TransversalSocket {
 						typeof val === 'string' &&
 						(val.startsWith('function') || val.startsWith('async'))
 					) {
-						return new Function('return ' + val)();
+						return new Function('return ' + val)();git
 					} else {
 						return val;
 					}
