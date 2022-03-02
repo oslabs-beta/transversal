@@ -35,7 +35,7 @@ class Transversal {
 
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
-			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			mutation: new GraphQLObjectType(this.#ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription
 		});
 
@@ -220,7 +220,7 @@ class Transversal {
 		// Generate RootSchema
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
-			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			mutation: new GraphQLObjectType(this.#ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
 		// Generate gql query string
@@ -236,19 +236,25 @@ class Transversal {
 		console.log('Registered gql query', this.gql);
 	}
 
+	/**
+	 * Generate GraphQL Mutation and save to this.RootSchema
+	 */
 	generateMutation(mutationName, fieldSchemaName, resolver, args) {
+		//Generate Resolver
 		this.#ResolverSchema.mutation.fields[mutationName] = {
 			type: this.#FieldSchema[fieldSchemaName],
 			args: args ? args : null,
 			resolve: resolver,
 		};
-
+		
+		// Generate RootSchema
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
-			mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+			mutation: new GraphQLObjectType(this.#ResolverSchema.mutation),
 			// subscription: new GraphQLObjectType(this.ResolverSchema.subscription),
 		});
 
+		// Generate GQL Query String
 		const gql = this.createGQLString(
 			mutationName,
 			'mutation',
@@ -266,17 +272,17 @@ class Transversal {
 		const argStrings = !args
 			? null
 			: Object.keys(args).reduce(
-					(res, arg, idx) => {
-						res[0] += `$${arg}: ${args[arg].type}`;
-						res[1] += `${arg}: $${arg}`;
+				(res, arg, idx) => {
+					res[0] += `$${arg}: ${args[arg].type}`;
+					res[1] += `${arg}: $${arg}`;
 
-						if (Object.keys(args).length - 1 !== idx) {
-							res[0] += ', ';
-							res[1] += ', ';
-						}
-						return res;
-					},
-					['', '']
+					if (Object.keys(args).length - 1 !== idx) {
+						res[0] += ', ';
+						res[1] += ', ';
+					}
+					return res;
+				},
+				['', '']
 			  );
 
 		// Helper function to convert fields to gql field strings
@@ -317,8 +323,7 @@ class Transversal {
 		} else {
 			const gqlMutation = args
 				? `
-		mutation ${name}(${argStrings[0]}) {
-			${name}(${argStrings[1]}) {
+		mutation ${name}(${argStrings[1]}) {
 				${fieldString}
 			}
 		}

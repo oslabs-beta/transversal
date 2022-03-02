@@ -57,14 +57,14 @@ mongoose
  */
 
 const redisClient = redis.createClient({
-	url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379',
+	// url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379',
 });
 
 /**
  * Instantiate Transversal and cache middleware
  */
 
-const transversal = new Transversal([User, Message]);
+const transversal = new Transversal([User, Message], redisClient);
 app.use('/transversal', transversal.cache.cacheMiddleware);
 
 /**
@@ -104,6 +104,7 @@ const addUserResolver = async (parent, args) => {
 
 transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
 transversal.generateMutation('addUser', 'User', addUserResolver, addUserArgs);
+
 /**
  *
  * Custom QUery Set Up
