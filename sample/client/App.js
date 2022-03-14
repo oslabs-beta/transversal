@@ -15,6 +15,7 @@ const App = () => {
 	console.log('trans', trans);
 
 	return (
+		
 		<Router>
 			<div className='container'>
 				<Routes>
@@ -22,6 +23,7 @@ const App = () => {
 				</Routes>
 			</div>
 		</Router>
+		
 	);
 };
 
