@@ -20,6 +20,7 @@ const App = () => {
 			<div className='container'>
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
+					<Route exact path='/transv' element={<Child trans={trans} />} />
 				</Routes>
 			</div>
 		</Router>
