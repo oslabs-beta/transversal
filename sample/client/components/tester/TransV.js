@@ -4,7 +4,7 @@ import Query from './component/Query';
 const TransV = ({trans}) => {
 
     const [times, setTimes] = useState([]);
-    const [isQuery, setIsQuery] = useState(false)
+    const [isQuery, setIsQuery] = useState(true)
 
     const toggleQuery = () => {
         setIsQuery(!isQuery)
@@ -57,7 +57,8 @@ const TransV = ({trans}) => {
 	return (
 	<>
 	<h1>TransV</h1>
-	<Query pingPong={pingPong} isQuery={isQuery}/>
+	<button onClick={()=>toggleQuery()}>{isQuery ? "Mutation" : "Query"}</button>
+	<Query pingPong={pingPong} isQuery={isQuery} trans={trans}/>
 	</>
     )
 }
