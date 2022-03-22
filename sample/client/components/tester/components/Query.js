@@ -1,4 +1,4 @@
-import React, { useState} from 'react'
+import React, { useState, useRef} from 'react'
 
 const Query = ({pingPong, isQuery, trans}) => {
 const [name, setName] = useState();
@@ -6,7 +6,7 @@ const [args, setArgs] = useState(null);
 const [cache, setCache] = useState(false);
 const [custom, setCustom] = useState(null);
 const [poll, setPoll] = useState(1);
-const [argsPlaceHolder, setArgsPlaceHolder] = useState(null);
+let argsPlaceHolder = useRef(null);
     
 const handleChange = (e,fn) => { fn(e.target.value)}
 const handleCheckboxChange = event => {
@@ -17,11 +17,12 @@ const handleArgsChange = (e) => {
   console.log(e.target.value)
   if(trans.gql[e.target.value]){
       const pattern = /[$].+[)]/gm;
-			const queryString = pattern.exec(trans.gql[e.target.value])
-      console.log(queryString)
-      const argString = queryString.slice(0, queryString.length-1)
-      setArgsPlaceHolder(argString)
+			let queryString = pattern.exec(trans.gql[e.target.value])
+      console.log(typeof queryString[0])
+      return argsPlaceHolder.current = queryString[0].slice(0, queryString[0].length-1)
+      
     }
+    argsPlaceHolder.current = null
 }
 
 
@@ -37,7 +38,7 @@ const handleArgsChange = (e) => {
   </label>
    <label>
     Args:
-    <input type="text" name="args" value={args} placeholder={argsPlaceHolder ? argsPlaceHolder : 'enter args'} onChange={(e)=>handleChange(e, setArgs)}/>
+    <input type="text" name="args" value={args} placeholder={argsPlaceHolder.current ? argsPlaceHolder.current : 'enter args, ex) name: value'} onChange={(e)=>handleChange(e, setArgs)}/>
   </label>
    <label>
     Cache:

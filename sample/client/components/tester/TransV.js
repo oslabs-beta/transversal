@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Query from './component/Query';
+import Query from './components/Query';
 
 const TransV = ({trans}) => {
 
@@ -9,7 +9,6 @@ const TransV = ({trans}) => {
     const toggleQuery = () => {
         setIsQuery(!isQuery)
     }
-
 
 	const pingPong = async (e, transObject) => {
 			e.preventDefault()

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TransversalSocket from '../TransversalSocket';
 import Child from './Child';
+import Navbar from './components/nav/Navbar';
+import './app.css';
 
 const App = () => {
 	const [trans, setTrans] = useState({ data: null });
@@ -15,16 +17,14 @@ const App = () => {
 	console.log('trans', trans);
 
 	return (
-		
 		<Router>
-			<div className='container'>
+			<div>
+				<Navbar />
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
-					<Route exact path='/transv' element={<Child trans={trans} />} />
 				</Routes>
 			</div>
 		</Router>
-		
 	);
 };
 

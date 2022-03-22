@@ -9,7 +9,7 @@ const Child = ({ trans }) => {
 	// // useEffect(() => {
 	// // 	const query = async () => {
 	// // 		const startTime = (new Date()).getTime();
-    // // 		let endTime = null
+	// // 		let endTime = null
 	// // 		let time = null;
 
 	// // 		const users = await trans.transversalQuery(
@@ -24,7 +24,6 @@ const Child = ({ trans }) => {
 	// // 		endTime = (new Date()).getTime();
 	// // 		time = endTime - startTime
 	// // 		setTime(time)
-			
 
 	// // 		const customUsers = await trans.transversalQuery(
 	// // 			trans.gql.getCustom,
@@ -33,9 +32,9 @@ const Child = ({ trans }) => {
 	// // 				height: 10,
 	// // 			},
 	// // 			false,
-	// // 			`firstName 
-	// // 		lastName 
-	// // 		age 
+	// // 			`firstName
+	// // 		lastName
+	// // 		age
 	// // 		height`
 	// // 		);
 	// // 		setCustomUsers(customUsers);
@@ -53,56 +52,12 @@ const Child = ({ trans }) => {
 	// // 			},
 	// // 			false]
 
-	// const pingPong = async (e, transObject) => {
-	// 		e.preventDefault()
-
-	// 		const {name, args, cache, custom, poll} = transObject
-	// 		const queryName = name
-	// 		const properties = args.split(', ')
-	// 		const argsObject = {}
-
-	// 		if (poll === 1){
-	// 		properties.forEach(prop => {
-	// 			const arr = prop.split(': ')
-	// 			return Number(arr[1]) ? argsObject[arr[0]] = Number(arr[1]) : argsObject[arr[0]] = arr[1]
-	// 		});
-
-	// 		const startTime = (new Date()).getTime();
-    // 		let endTime = null
-
-	// 		const answer = await trans.transversalQuery(trans.gql[name], argsObject, cache, custom);
-			
-	// 		endTime = (new Date()).getTime();
-	// 		setTimes({queryName: queryName,  reponseTime: endTime - startTime, answer: answer})
-	// 	}
-	// 	else{
-	// 		const time = [];
-	// 		let answer = null
-	// 		for(let i=0; i<poll; i++){
-	// 			properties.forEach(prop => {
-	// 			const arr = prop.split(': ')
-	// 			return Number(arr[1]) ? argsObject[arr[0]] = Number(arr[1]) : argsObject[arr[0]] = arr[1]
-	// 		});
-
-	// 		const startTime = (new Date()).getTime();
-    // 		let endTime = null
-
-	// 		answer = await trans.transversalQuery(trans.gql[name], argsObject, cache, custom);
-			
-	// 		endTime = (new Date()).getTime();
-	// 		time.push(endTime-startTime)
-	// 		}
-	// 		setTimes({query: queryName, responseTimes: time, answer: answer})
-	// 	}
-	// 	};
-	// 	console.log(times)
 	return (
-	<>
-	<h1>Hello World!</h1>
-	<TransV trans={trans}/>
-	
-	</>
-	)
+		<>
+			<h1>Hello World!</h1>
+			<TransV trans={trans} />
+		</>
+	);
 };
 
 export default Child;
