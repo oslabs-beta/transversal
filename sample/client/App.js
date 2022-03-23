@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './app.css';
 import TransversalSocket from '../TransversalSocket';
 import Child from './Child';
 import Navbar from './components/nav/Navbar';
-import './app.css';
+import GraphQL from './components/GraphQL';
+import Footer from './components/footer/Footer';
 
 const App = () => {
 	const [trans, setTrans] = useState({ data: null });
@@ -22,7 +24,9 @@ const App = () => {
 				<Navbar />
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
+					<Route path='/graphql' element={<GraphQL />} />
 				</Routes>
+				<Footer />
 			</div>
 		</Router>
 	);
