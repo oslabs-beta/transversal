@@ -6,9 +6,11 @@ import Child from './Child';
 import Navbar from './components/nav/Navbar';
 import GraphQL from './components/GraphQL';
 import Footer from './components/footer/Footer';
+import Drawer from './components/drawer/Drawer';
 
 const App = () => {
 	const [trans, setTrans] = useState({ data: null });
+	const [drawerOpen, setDrawerOpen] = useState(false);
 
 	const transSocket = new TransversalSocket('http://localhost:3000');
 
@@ -22,10 +24,12 @@ const App = () => {
 		<Router>
 			<div>
 				<Navbar />
+				{/* <Drawer drawerOpen={drawerOpen} /> */}
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
 					<Route path='/graphql' element={<GraphQL />} />
 				</Routes>
+
 				<Footer />
 			</div>
 		</Router>

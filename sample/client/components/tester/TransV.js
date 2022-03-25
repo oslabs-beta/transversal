@@ -1,65 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import Query from './components/Query';
 
-const TransV = ({trans}) => {
+const TransV = ({ trans }) => {
+	const [times, setTimes] = useState([]);
+	const [isQuery, setIsQuery] = useState(true);
 
-    const [times, setTimes] = useState([]);
-    const [isQuery, setIsQuery] = useState(true)
-
-    const toggleQuery = () => {
-        setIsQuery(!isQuery)
-    }
+	const toggleQuery = () => {
+		setIsQuery(!isQuery);
+	};
 
 	const pingPong = async (e, transObject) => {
-			e.preventDefault()
+		e.preventDefault();
 
-			const {name, args, cache, custom, poll} = transObject
-			const queryName = name
-			const properties = args.split(', ')
-			const argsObject = {}
+		const { name, args, cache, custom, poll } = transObject;
+		const queryName = name;
+		const properties = args.split(', ');
+		const argsObject = {};
 
-			if (poll === 1){
-			properties.forEach(prop => {
-				const arr = prop.split(': ')
-				return Number(arr[1]) ? argsObject[arr[0]] = Number(arr[1]) : argsObject[arr[0]] = arr[1]
+		if (poll === 1) {
+			properties.forEach((prop) => {
+				const arr = prop.split(': ');
+				return Number(arr[1])
+					? (argsObject[arr[0]] = Number(arr[1]))
+					: (argsObject[arr[0]] = arr[1]);
 			});
 
-			const startTime = (new Date()).getTime();
-    		let endTime = null
+			const startTime = new Date().getTime();
+			let endTime = null;
 
-			const answer = await trans.transversalQuery(trans.gql[name], argsObject, cache, custom);
-			
-			endTime = (new Date()).getTime();
-			setTimes({queryName: queryName,  reponseTime: endTime - startTime, answer: answer})
-		}
-		else{
+			const answer = await trans.transversalQuery(
+				trans.gql[name],
+				argsObject,
+				cache,
+				custom
+			);
+
+			endTime = new Date().getTime();
+			setTimes({
+				queryName: queryName,
+				reponseTime: endTime - startTime,
+				answer: answer,
+			});
+		} else {
 			const time = [];
-			let answer = null
-			for(let i=0; i<poll; i++){
-				properties.forEach(prop => {
-				const arr = prop.split(': ')
-				return Number(arr[1]) ? argsObject[arr[0]] = Number(arr[1]) : argsObject[arr[0]] = arr[1]
-			});
+			let answer = null;
+			for (let i = 0; i < poll; i++) {
+				properties.forEach((prop) => {
+					const arr = prop.split(': ');
+					return Number(arr[1])
+						? (argsObject[arr[0]] = Number(arr[1]))
+						: (argsObject[arr[0]] = arr[1]);
+				});
 
-			const startTime = (new Date()).getTime();
-    		let endTime = null
+				const startTime = new Date().getTime();
+				let endTime = null;
 
-			answer = await trans.transversalQuery(trans.gql[name], argsObject, cache, custom);
-			
-			endTime = (new Date()).getTime();
-			time.push(endTime-startTime)
+				answer = await trans.transversalQuery(
+					trans.gql[name],
+					argsObject,
+					cache,
+					custom
+				);
+
+				endTime = new Date().getTime();
+				time.push(endTime - startTime);
 			}
-			setTimes({query: queryName, responseTimes: time, answer: answer})
+			setTimes({ query: queryName, responseTimes: time, answer: answer });
 		}
-		};
-		console.log(times)
+	};
+	console.log(times);
 	return (
-	<>
-	<h1>TransV</h1>
-	<button onClick={()=>toggleQuery()}>{isQuery ? "Mutation" : "Query"}</button>
-	<Query pingPong={pingPong} isQuery={isQuery} trans={trans}/>
-	</>
-    )
-}
+		<>
+			<h1>TransV</h1>
+			<button onClick={() => toggleQuery()}>
+				{isQuery ? 'Mutation' : 'Query'}
+			</button>
+			<Query pingPong={pingPong} isQuery={isQuery} trans={trans} />
+		</>
+	);
+};
 
-export default TransV
+export default TransV;
