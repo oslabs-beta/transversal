@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import './query.css';
 
 const Query = ({ pingPong, isQuery, trans }) => {
 	const [name, setName] = useState();
@@ -32,9 +33,13 @@ const Query = ({ pingPong, isQuery, trans }) => {
 	return (
 		<>
 			{isQuery ? (
-				<>
+				<div className='container'>
 					<h3>Query</h3>
+					<button onClick={() => toggleQuery()}>
+						{isQuery ? 'Mutation' : 'Query'}
+					</button>
 					<form
+						className='form'
 						onSubmit={(e) => {
 							pingPong(e, { name, args, cache, custom, poll });
 						}}>
@@ -90,9 +95,9 @@ const Query = ({ pingPong, isQuery, trans }) => {
 						</label>
 						<input type='submit' value='Submit' />
 					</form>
-				</>
+				</div>
 			) : (
-				<>
+				<div>
 					<h3>Mutation</h3>
 					<form
 						onSubmit={(e) => {
@@ -145,7 +150,7 @@ const Query = ({ pingPong, isQuery, trans }) => {
 						</label>
 						<input type='submit' value='Submit' />
 					</form>
-				</>
+				</div>
 			)}
 		</>
 	);

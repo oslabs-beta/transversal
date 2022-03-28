@@ -10,7 +10,7 @@ import Drawer from './components/drawer/Drawer';
 
 const App = () => {
 	const [trans, setTrans] = useState({ data: null });
-	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [drawerOpen, setDrawerOpen] = useState(true);
 
 	const transSocket = new TransversalSocket('http://localhost:3000');
 
@@ -24,7 +24,7 @@ const App = () => {
 		<Router>
 			<div>
 				<Navbar />
-				{/* <Drawer drawerOpen={drawerOpen} /> */}
+				<Drawer drawerOpen={drawerOpen} trans={trans} />
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
 					<Route path='/graphql' element={<GraphQL />} />

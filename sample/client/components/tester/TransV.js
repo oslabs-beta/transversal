@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Query from './components/Query';
+import './transV.css';
 
 const TransV = ({ trans }) => {
 	const [times, setTimes] = useState([]);
@@ -70,13 +71,14 @@ const TransV = ({ trans }) => {
 	};
 	console.log(times);
 	return (
-		<>
-			<h1>TransV</h1>
-			<button onClick={() => toggleQuery()}>
-				{isQuery ? 'Mutation' : 'Query'}
-			</button>
+		<div className='trans'>
+			<div className='trans-header'>
+				<h1>TransV</h1>
+				<button onClick={toggleQuery}>{isQuery ? 'Mutation' : 'Query'}</button>
+			</div>
+
 			<Query pingPong={pingPong} isQuery={isQuery} trans={trans} />
-		</>
+		</div>
 	);
 };
 

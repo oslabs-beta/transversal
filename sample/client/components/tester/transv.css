@@ -1,0 +1,12 @@
+.trans {
+	/* display: flex; */
+	/* flex-direction: column; */
+	justify-content: center;
+	align-items: center;
+}
+
+.trans-header {
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+}

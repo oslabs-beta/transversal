@@ -56,7 +56,7 @@ const Child = ({ trans }) => {
 	return (
 		<>
 			<h1>Hello World!</h1>
-			<TransV trans={trans} />
+			{/* <TransV trans={trans} /> */}
 			<Chart />
 		</>
 	);
