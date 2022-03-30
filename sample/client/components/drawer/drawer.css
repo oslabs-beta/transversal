@@ -3,7 +3,7 @@
 	background: white;
 	display: flex;
 	justify-content: center;
-	padding-top: 10%;
+	padding-top: 5%;
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -22,7 +22,8 @@
 
 .side-drawer-contents {
 	display: flex;
-	align-items: start;
+	justify-content: flex-start;
+	align-items: center;
 	padding: 10px;
 }
 

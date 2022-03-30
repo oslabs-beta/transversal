@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import './query.css';
 
 const Query = ({ pingPong, isQuery, trans }) => {
-	const [name, setName] = useState();
-	const [args, setArgs] = useState(null);
+	const [name, setName] = useState('');
+	const [args, setArgs] = useState('');
 	const [cache, setCache] = useState(false);
-	const [custom, setCustom] = useState(null);
+	const [custom, setCustom] = useState('');
 	const [poll, setPoll] = useState(1);
 	const argsPlaceHolder = useRef(null);
 
@@ -35,11 +35,8 @@ const Query = ({ pingPong, isQuery, trans }) => {
 			{isQuery ? (
 				<div className='container'>
 					<h3>Query</h3>
-					<button onClick={() => toggleQuery()}>
-						{isQuery ? 'Mutation' : 'Query'}
-					</button>
 					<form
-						className='form'
+						className='trans-form'
 						onSubmit={(e) => {
 							pingPong(e, { name, args, cache, custom, poll });
 						}}>
@@ -97,9 +94,10 @@ const Query = ({ pingPong, isQuery, trans }) => {
 					</form>
 				</div>
 			) : (
-				<div>
+				<div className='container'>
 					<h3>Mutation</h3>
 					<form
+						className='trans-form'
 						onSubmit={(e) => {
 							pingPong(e, { name, args, cache, custom, poll });
 						}}>

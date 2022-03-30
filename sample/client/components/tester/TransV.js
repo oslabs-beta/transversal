@@ -44,7 +44,7 @@ const TransV = ({ trans }) => {
 			});
 		} else {
 			const time = [];
-			let answer = null;
+			let payload = null;
 			for (let i = 0; i < poll; i++) {
 				properties.forEach((prop) => {
 					const arr = prop.split(': ');
@@ -56,7 +56,7 @@ const TransV = ({ trans }) => {
 				const startTime = new Date().getTime();
 				let endTime = null;
 
-				answer = await trans.transversalQuery(
+				payload = await trans.transversalQuery(
 					trans.gql[name],
 					argsObject,
 					cache,
@@ -66,7 +66,7 @@ const TransV = ({ trans }) => {
 				endTime = new Date().getTime();
 				time.push(endTime - startTime);
 			}
-			setTimes({ query: queryName, responseTimes: time, answer: answer });
+			setTimes({ query: queryName, responseTimes: time, payload: payload });
 		}
 	};
 	console.log(times);
