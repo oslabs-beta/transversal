@@ -1,0 +1,106 @@
+:root {
+	--primary: white;
+}
+
+.btn {
+	padding: 8px 20px;
+	border-radius: 4px;
+	outline: none;
+	border: none;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.btn--primary {
+	background-color: var(--primary);
+	color: #242424;
+	border: 1px solid var(--primary);
+}
+
+.btn--outline {
+	background-color: transparent;
+	color: white;
+	padding: 8px 20px;
+	border: 1px solid var(--primary);
+	transition: all 0.3s ease-out;
+}
+
+.btn--medium {
+	padding: 8px 20px;
+	font-size: 18px;
+}
+
+.btn--large {
+	padding: 12px 26px;
+	font-size: 20px;
+}
+
+.btn--mobile {
+	text-align: center;
+	border-radius: 4px;
+	width: 80%;
+	text-decoration: none;
+	font-size: 24px;
+	background-color: transparent;
+	color: white;
+	padding: 14px 20px;
+	border: 1px solid white;
+	transition: all 0.3s ease-out;
+}
+
+.btn--wide {
+	padding: 12px 64px;
+	font-size: 20px;
+}
+
+.btn--medium :hover,
+.btn--large :hover,
+.btn--mobile :hover {
+	color: #242424;
+	background-color: white;
+	transition: all 0.3s ease-out;
+}
+
+.btn--wide :hover {
+	color: white;
+	background-color: #f00946;
+	transition: all 0.2s ease-out;
+}
+
+.blue {
+	background-color: blue;
+	color: white;
+	border: none;
+}
+
+.green {
+	background-color: green;
+	color: white;
+	border: none;
+}
+.red {
+	background-color: red;
+	color: white;
+	border: none;
+}
+.primary {
+	background-color: #242424;
+	color: white;
+	border: none;
+}
+
+.primary:hover {
+	background-color: white;
+	color: #242424;
+	border: none;
+}
+
+.btn-link {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
+	padding: 8px 16px;
+	height: 100%;
+	width: 100%;
+}

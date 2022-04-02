@@ -1,0 +1,31 @@
+.side-drawer {
+	height: 100vh;
+	background: white;
+	display: flex;
+	justify-content: center;
+	padding-top: 5%;
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: -100%;
+	width: 30%;
+	max-width: 400px;
+	z-index: 200;
+	box-shadow: 1px 0px 7px rgba(0, 0, 0, 0.5);
+	transition: 850ms;
+}
+
+.side-drawer.open {
+	left: 0;
+	transition: 350ms;
+}
+
+.side-drawer-contents {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 10px;
+}
+
+/* @media screen and (max-width: 960px) {
+} */
