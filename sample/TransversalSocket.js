@@ -6,11 +6,12 @@ class TransversalSocket {
 	}
 	/**
 	 * Transversal Instance
-	 * @param {*} timeout 
-	 * @returns 
+	 * @param {*} timeout
+	 * @returns
 	 */
 	getTransversalInstance(timeout = 10000) {
 		return new Promise((resolve, reject) => {
+			// eslint-disable-next-line prefer-const
 			let timer;
 
 			function responseHandler(data) {
@@ -20,7 +21,8 @@ class TransversalSocket {
 						typeof val === 'string' &&
 						(val.startsWith('function') || val.startsWith('async'))
 					) {
-						return new Function('return ' + val)();git
+						return new Function('return ' + val)();
+						git;
 					} else {
 						return val;
 					}
