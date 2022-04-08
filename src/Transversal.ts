@@ -2,11 +2,17 @@ const {
 	GraphQLObjectType,
 	GraphQLList,
 	GraphQLInt,
+	GraphQLFloat,
 	GraphQLString,
+	GraphQLBoolean,
 	GraphQLID,
 	GraphQLSchema,
 } = require('graphql');
 
-const User = GraphQLString();
+class Transversal {
+	private MongoModels: any[];
 
-console.log(User);
+	constructor(MongoModels: any[]) {
+		this.MongoModels = MongoModels;
+	}
+}

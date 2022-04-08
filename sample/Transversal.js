@@ -6,13 +6,14 @@ const {
 	GraphQLID,
 	GraphQLSchema,
 } = require('graphql');
+
 const TransversalCache = require('./TransversalCache');
 class Transversal {
 	#type;
 	#MongoModels;
 	#FieldSchema;
 	#ResolverSchema;
-	/** 
+	/**
 	 * @param {Object} MongoModel Schema
 	 * @param {Connection} Redis Client
 	 */
@@ -250,7 +251,7 @@ class Transversal {
 	 * @param {Function} Args Callback Argument Function
 	 * @returns
 	 */
-	
+
 	generateMutation(mutationName, fieldSchemaName, resolver, args) {
 		//Generate Resolver
 		this.#ResolverSchema.mutation.fields[mutationName] = {
@@ -258,7 +259,7 @@ class Transversal {
 			args: args ? args : null,
 			resolve: resolver,
 		};
-		
+
 		// Generate RootSchema
 		this.RootSchema = new GraphQLSchema({
 			query: new GraphQLObjectType(this.#ResolverSchema.query),
@@ -273,7 +274,7 @@ class Transversal {
 			this.#FieldSchema[fieldSchemaName],
 			args
 		);
-		
+
 		this.gql[mutationName] = gql;
 
 		console.log('Registered gql mutation', this.gql);
@@ -283,7 +284,7 @@ class Transversal {
 	 * Creating GraphQL String
 	 * @param {String} name
 	 * @param {Object} type
-	 * @param {Object} fieldSchema 
+	 * @param {Object} fieldSchema
 	 * @param {Function} args Callback Argument Function
 	 * @returns
 	 */
@@ -292,17 +293,17 @@ class Transversal {
 		const argStrings = !args
 			? null
 			: Object.keys(args).reduce(
-				(res, arg, idx) => {
-					res[0] += `$${arg}: ${args[arg].type}`;
-					res[1] += `${arg}: $${arg}`;
+					(res, arg, idx) => {
+						res[0] += `$${arg}: ${args[arg].type}`;
+						res[1] += `${arg}: $${arg}`;
 
-					if (Object.keys(args).length - 1 !== idx) {
-						res[0] += ', ';
-						res[1] += ', ';
-					}
-					return res;
-				},
-				['', '']
+						if (Object.keys(args).length - 1 !== idx) {
+							res[0] += ', ';
+							res[1] += ', ';
+						}
+						return res;
+					},
+					['', '']
 			  );
 
 		// Helper function to convert fields to gql field strings
@@ -360,10 +361,10 @@ class Transversal {
 		}
 	}
 
-	/** 
-	 * 
-	 * @param {*} gql 
-	 * @returns 
+	/**
+	 *
+	 * @param {*} gql
+	 * @returns
 	 */
 	findGqlKey(gql) {
 		return Object.keys(this.gql).find((key) => this.gql[key] === gql);
