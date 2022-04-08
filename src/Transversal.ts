@@ -1,3 +1,12 @@
-let x: number = 5;
+const {
+	GraphQLObjectType,
+	GraphQLList,
+	GraphQLInt,
+	GraphQLString,
+	GraphQLID,
+	GraphQLSchema,
+} = require('graphql');
 
-x = 'hi';
+const User = GraphQLString();
+
+console.log(User);
