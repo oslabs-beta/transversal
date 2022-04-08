@@ -86,12 +86,9 @@ class Transversal {
 			};
 
 			if (!cacheOption) {
-				console.log('caching option not selected');
 				const res = await request('/graphql', gql, variables);
 				return res;
 			} else {
-				console.log('caching option selected!');
-
 				const res = await fetch('/transversal', {
 					method: 'POST',
 					headers: {
@@ -136,12 +133,8 @@ class Transversal {
 				name: model.modelName,
 				fields: () => fields,
 			});
-
-			console.log(
-				'Default Field Added =>',
-				this.#FieldSchema[model.modelName]._fields()
-			);
 		});
+		console.log(this.#FieldSchema.User._fields());
 	}
 	/**
 	 * Generate Custom Field Schema
@@ -203,10 +196,6 @@ class Transversal {
 			name: customSchemaName,
 			fields: () => customFields,
 		});
-		console.log(
-			'Custom Field Added =>',
-			this.#FieldSchema[customSchemaName]._fields()
-		);
 	}
 
 	/**
@@ -239,8 +228,6 @@ class Transversal {
 		);
 
 		this.gql[queryName] = gql;
-
-		console.log('Registered gql query', this.gql);
 	}
 
 	/**
@@ -276,8 +263,6 @@ class Transversal {
 		);
 
 		this.gql[mutationName] = gql;
-
-		console.log('Registered gql mutation', this.gql);
 	}
 
 	/**

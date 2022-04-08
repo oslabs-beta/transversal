@@ -1,18 +1,9 @@
-const {
-	GraphQLObjectType,
-	GraphQLList,
-	GraphQLInt,
-	GraphQLFloat,
-	GraphQLString,
-	GraphQLBoolean,
-	GraphQLID,
-	GraphQLSchema,
-} = require('graphql');
+export {};
 
-class Transversal {
-	private MongoModels: any[];
-
+class Transversal extends require('./GQLStringGenerator') {
 	constructor(MongoModels: any[]) {
-		this.MongoModels = MongoModels;
+		super(MongoModels);
 	}
 }
+
+module.exports = Transversal;

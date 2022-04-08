@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql').graphqlHTTP;
+const Transversal = require('../Transversal');
 const { User, Message } = require('./models/mongoModel');
 const PORT = process.env.PORT || 3000;
 const socketio = require('socket.io');
@@ -54,14 +55,45 @@ mongoose
 /**
  * Initialize Redis Client
  */
-const redisClient = redis.createClient({});
 
-const Transversal = require('../../dist/Transversal');
-const transversal = new Transversal([User, Message]);
+const redisClient = redis.createClient({
+	// url: process.env.REDIS_URI || 'redis://default:pass@127.0.0.1:6379',
+});
+
+/**
+ * Instantiate Transversal and cache middleware
+ */
+
+const transversal = new Transversal([User, Message], redisClient);
+app.use('/transversal', transversal.cache.cacheMiddleware);
+
+/**
+ * Test Below
+ */
+const SchemaGenerator = require('../../dist/SchemaGenerator');
+console.log('------------------------------------');
+const test = new SchemaGenerator([User, Message]);
+console.log('hey', test);
+console.log('------------------------------------');
+/**
+ * Test Above
+ */
+
+/**
+ * Basic Query Set Up
+ */
+// Generate basic field schema
 transversal.generateFieldSchema();
 
 // Generate resolver
 const userArgs = {
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
+};
+
+const addUserArgs = {
+	firstName: { type: GraphQLString },
+	lastName: { type: GraphQLString },
 	age: { type: GraphQLInt },
 	height: { type: GraphQLInt },
 };
@@ -72,7 +104,71 @@ const userResolver = async (parent, args) => {
 	return users;
 };
 
-// transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+const addUserResolver = async (parent, args) => {
+	const users = await User.create({
+		firstName: args.firstName,
+		lastName: args.lastName,
+		age: args.age,
+		height: args.height,
+	});
+	return users;
+};
+
+transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+transversal.generateMutation('addUser', 'User', addUserResolver, addUserArgs);
+
+/**
+ *
+ * Custom QUery Set Up
+ */
+// Generate custom field schema
+const customSchema = {
+	firstName: 'String',
+	lastName: 'String',
+	age: 'Number',
+	height: 'Number',
+	school: {
+		name: 'String',
+		year: 'Number',
+		code: {
+			code: 'String',
+		},
+	},
+	messages: [{ message: 'String' }],
+};
+
+transversal.generateCustomFieldSchema(customSchema, 'customQuery');
+
+// Resolver and arguments
+const customResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
+	const messages = await Message.find({});
+	users.map((user) => {
+		user.messages = messages;
+		user.school = {
+			name: 'Hello Scool',
+			year: 1900,
+			code: {
+				code: 'D2F',
+			},
+		};
+	});
+
+	return users;
+};
+
+const customArgs = {
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
+};
+
+// Generate resolver and query
+transversal.generateQuery(
+	'getCustom',
+	'customQuery',
+	customResolver,
+	customArgs
+);
 
 // Stringify object with methods
 function replacer(key, value) {
