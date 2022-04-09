@@ -56,9 +56,10 @@ mongoose
  */
 const redisClient = redis.createClient({});
 
-const Transversal = require('../../dist/Transversal');
+const Transversal = require('transversal');
 const transversal = new Transversal([User, Message]);
 transversal.generateFieldSchema();
+console.log(transversal.FieldSchema.User._fields());
 
 // Generate resolver
 const userArgs = {
