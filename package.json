@@ -8,8 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
-    "preinstall": "npm i npm-force-resolutions && npm-force-resolutions"
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -23,7 +22,6 @@
   "homepage": "https://github.com/oslabs-beta/transversal#readme",
   "dependencies": {
     "@types/node": "^17.0.23",
-    "graphql": "^16.3.0",
     "typescript": "^4.6.3"
   },
   "devDependencies": {
