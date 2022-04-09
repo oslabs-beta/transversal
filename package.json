@@ -1,6 +1,6 @@
 {
   "name": "transversal_test",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,10 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
     "type": "git",
