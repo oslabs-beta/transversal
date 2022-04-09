@@ -59,7 +59,6 @@ const redisClient = redis.createClient({});
 const Transversal = require('transversal');
 const transversal = new Transversal([User, Message]);
 transversal.generateFieldSchema();
-console.log(transversal.FieldSchema.User._fields());
 
 // Generate resolver
 const userArgs = {
@@ -73,7 +72,60 @@ const userResolver = async (parent, args) => {
 	return users;
 };
 
-// transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+transversal.generateQuery('getUsers', 'User', userResolver, userArgs);
+
+/**
+ *
+ * Custom QUery Set Up
+ */
+// Generate custom field schema
+const customSchema = {
+	firstName: 'String',
+	lastName: 'String',
+	age: 'Number',
+	height: 'Number',
+	school: {
+		name: 'String',
+		year: 'Number',
+		code: {
+			code: 'String',
+		},
+	},
+	messages: [{ message: 'String' }],
+};
+
+transversal.generateCustomFieldSchema(customSchema, 'customQuery');
+
+// Resolver and arguments
+const customResolver = async (parent, args) => {
+	const users = await User.find({ age: args.age, height: args.height });
+	const messages = await Message.find({});
+	users.map((user) => {
+		user.messages = messages;
+		user.school = {
+			name: 'Hello Scool',
+			year: 1900,
+			code: {
+				code: 'D2F',
+			},
+		};
+	});
+
+	return users;
+};
+
+const customArgs = {
+	age: { type: GraphQLInt },
+	height: { type: GraphQLInt },
+};
+
+// Generate resolver and query
+transversal.generateQuery(
+	'getCustom',
+	'customQuery',
+	customResolver,
+	customArgs
+);
 
 // Stringify object with methods
 function replacer(key, value) {
