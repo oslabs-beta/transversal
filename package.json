@@ -32,8 +32,8 @@
     "tslint-config-prettier": "^1.18.0"
   },
   "resolutions": {
-    "graphql": "<=16.3.0",
-    "**/graphql": "<=16.3.0"
+    "graphql": "16.3.0",
+    "**/graphql": "16.3.0"
   },
   "files": [
     "lib/**/*"
