@@ -1,6 +1,6 @@
 export {};
 
-class GQLStringGenerator extends require('./MutationGenerator') {
+class GQLStringGenerator extends require('../generators/MutationGenerator') {
 	constructor(MongoModels: any[]) {
 		super(MongoModels);
 	}

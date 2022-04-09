@@ -10,7 +10,7 @@ const {
 	GraphQLID,
 } = require('graphql');
 
-class SchemaGenerator extends require('./TransversalSchema') {
+class SchemaGenerator extends require('../schemas/TransversalSchema') {
 	private type: any;
 	private MongoModels: any[];
 
@@ -21,7 +21,7 @@ class SchemaGenerator extends require('./TransversalSchema') {
 			Number: GraphQLInt,
 			Decimal128: GraphQLFloat,
 			Boolean: GraphQLBoolean,
-			ObjectId: GraphQLID,
+			ObjectID: GraphQLID,
 		};
 		this.MongoModels = MongoModels;
 	}
@@ -34,6 +34,11 @@ class SchemaGenerator extends require('./TransversalSchema') {
 			const fields = {};
 
 			Object.keys(model.schema.paths).forEach((field) => {
+				console.log(
+					field,
+					model.schema.paths[field].instance,
+					this.type[model.schema.paths[field].instance]
+				);
 				if (field !== '__v') {
 					fields[field] = {
 						type: this.type[model.schema.paths[field].instance],

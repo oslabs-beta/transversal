@@ -1,6 +1,6 @@
 export {};
 
-class TransversalQuery extends require('./SchemaGenerator') {
+class TransversalQuery extends require('../generators/SchemaGenerator') {
 	public gql: any;
 	public transversalQuery: any;
 

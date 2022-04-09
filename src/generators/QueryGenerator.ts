@@ -2,7 +2,7 @@ export {};
 
 const { GraphQLObjectType, GraphQLList, GraphQLSchema } = require('graphql');
 
-class QueryGenerator extends require('./TransversalQuery') {
+class QueryGenerator extends require('../schemas/TransversalQuery') {
 	constructor(MongoModels: any[]) {
 		super(MongoModels);
 	}

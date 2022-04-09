@@ -1,6 +1,6 @@
 export {};
 
-class Transversal extends require('./GQLStringGenerator') {
+class Transversal extends require('./utilities/GQLStringGenerator') {
 	constructor(MongoModels: any[]) {
 		super(MongoModels);
 	}

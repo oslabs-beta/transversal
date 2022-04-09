@@ -1,7 +1,7 @@
 export {};
 
 const { GraphQLObjectType, GraphQLSchema } = require('graphql');
-const { IResolverSchema, IRootSchema } = require('./Interfaces');
+const { IResolverSchema, IRootSchema } = require('../types/Interfaces');
 
 class TransversalSchema {
 	protected FieldSchema: any;
