@@ -1,2 +1,7 @@
-module.exports = require('./Transversal');
-module.exports = require('./TransversalSocket')
+const Transversal = require('./Transversal');
+const TransversalSocket = require('./TransversalSocket')
+
+module.exports = {
+  Transversal,
+  TransversalSocket
+}
