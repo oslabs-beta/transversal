@@ -1,6 +1,6 @@
 {
   "name": "transversal",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
