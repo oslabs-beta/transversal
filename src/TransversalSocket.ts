@@ -1,4 +1,5 @@
-import { io } from 'socket.io-client';
+export {};
+const { io } = require('socket.io-client');
 
 class TransversalSocket {
   public socket: any;

@@ -34,7 +34,6 @@ class SchemaGenerator extends require('../schemas/TransversalSchema') {
       const fields = {};
 
       Object.keys(model.schema.paths).forEach((field) => {
-        console.log(field, model.schema.paths[field].instance, this.type[model.schema.paths[field].instance]);
         if (field !== '__v') {
           fields[field] = {
             type: this.type[model.schema.paths[field].instance],

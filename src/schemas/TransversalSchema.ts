@@ -22,7 +22,7 @@ class TransversalSchema {
     };
     this.RootSchema = new GraphQLSchema({
       query: new GraphQLObjectType(this.ResolverSchema.query),
-      // mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+      mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
     });
   }
 }
