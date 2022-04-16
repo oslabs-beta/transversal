@@ -8,14 +8,14 @@ class TransversalQuery extends require('../generators/SchemaGenerator') {
     super(MongoModels);
     this.gql = {};
     this.transversalQuery = async (gql, variables, cacheOption = false, custom) => {
-      if (custom) {
-        const pattern = /^.+{$/gm;
+      // if (custom) {
+      //   const pattern = /^.+{$/gm;
 
-        const queryString = pattern.exec(gql);
-        const queryString2 = pattern.exec(gql);
+      //   const queryString = pattern.exec(gql);
+      //   const queryString2 = pattern.exec(gql);
 
-        gql = queryString + '\n' + queryString2 + '\n' + custom + '\n' + '}' + '\n' + '}';
-      }
+      //   gql = queryString + '\n' + queryString2 + '\n' + custom + '\n' + '}' + '\n' + '}';
+      // }
 
       const request = async (endpoint, gql, variables) => {
         const res = await fetch(endpoint, {
@@ -37,6 +37,7 @@ class TransversalQuery extends require('../generators/SchemaGenerator') {
       if (!cacheOption) {
         console.log('caching option not selected');
         const res = await request('/graphql', gql, variables);
+        console.log('res', res)
         return res;
       } else {
         console.log('caching option selected!');
