@@ -1,8 +1,8 @@
-export {};
+// export {};
 const { io } = require('socket.io-client');
 
 class TransversalSocket {
-  public socket: any;
+  // public socket: any;
 
   constructor(url) {
     this.socket = io(url);
