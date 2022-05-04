@@ -28,6 +28,7 @@ const App = () => {
 				<Routes>
 					<Route exact path='/' element={<Child trans={trans} />} />
 					<Route path='/graphql' element={<GraphQL />} />
+				  
 				</Routes>
 
 				<Footer />

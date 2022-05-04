@@ -20,7 +20,7 @@ class TransversalSocket {
 						typeof val === 'string' &&
 						(val.startsWith('function') || val.startsWith('async'))
 					) {
-						return new Function('return ' + val)();git
+						return new Function('return ' + val)();
 					} else {
 						return val;
 					}
