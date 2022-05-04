@@ -1,19 +1,19 @@
-// export {};
+export {};
 const { io } = require('socket.io-client');
 
-class TransversalSocket {
-  // public socket: any;
+class TransversalClient {
+  public socket: any;
 
   constructor(url) {
     this.socket = io(url);
   }
 
-  getTransversalInstance(timeout = 10000) {
-    return new Promise((resolve, reject) => {
+  getTransversalInstance(timeout: number = 10000): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
       let timer;
 
-      function responseHandler(data) {
-        data = JSON.parse(data, (name, val) => {
+      function responseHandler(data: string) {
+        data = JSON.parse(data, (name: string | undefined, val: string) => {
           if (val && typeof val === 'string' && (val.startsWith('function') || val.startsWith('async'))) {
             return new Function('return ' + val)();
           } else {
@@ -36,4 +36,4 @@ class TransversalSocket {
   }
 }
 
-export default TransversalSocket;
+export default TransversalClient;

@@ -1,7 +1,7 @@
 const Transversal = require('./Transversal');
-const TransversalSocket = require('./TransversalSocket')
+const TransversalClient = require('./TransversalClient')
 
 module.exports = {
   Transversal,
-  TransversalSocket
+  TransversalClient
 }
