@@ -13,13 +13,7 @@ class TransversalClient {
       let timer;
 
       function responseHandler(data: string) {
-        data = JSON.parse(data, (name: string | undefined, val: string) => {
-          if (val && typeof val === 'string' && (val.startsWith('function') || val.startsWith('async'))) {
-            return new Function('return ' + val)();
-          } else {
-            return val;
-          }
-        });
+        data = JSON.parse(data);
         resolve(data);
         clearTimeout(timer);
       }
