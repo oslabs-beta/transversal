@@ -1,11 +1,7 @@
 export {};
 
-function jsonStringify(key, value) {
-  if (typeof value === 'function') {
-    return value.toString();
-  } else {
-    return value;
-  }
+function jsonStringify(object: any): string {
+  return JSON.stringify(object);
 }
 
 module.exports = jsonStringify;
