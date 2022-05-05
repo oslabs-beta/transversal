@@ -7,6 +7,7 @@ class TransversalSchema {
   protected FieldSchema: any;
   protected ResolverSchema: IResolverSchema;
   public RootSchema: IRootSchema;
+  public gql: any;
 
   constructor() {
     this.FieldSchema = {};
@@ -24,6 +25,7 @@ class TransversalSchema {
       query: new GraphQLObjectType(this.ResolverSchema.query),
       mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
     });
+    this.gql = {};
   }
 }
 
