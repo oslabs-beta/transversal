@@ -14,7 +14,7 @@ class InstantiateSocket {
 
   openConnection(transversalJson) {
     this.io.on('connection', (socket) => {
-      console.log('client connected: ', socket.id);
+      console.log('transversal connected: ', socket.id);
       socket.emit('transverse', transversalJson);
       socket.on('disconnect', (reason) => {
         console.log(reason);

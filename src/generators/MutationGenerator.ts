@@ -8,7 +8,7 @@ class MutationGenerator extends require('./QueryGenerator') {
   }
 
   generateMutation(mutationName, fieldSchemaName, resolver, args) {
-    //Generate Resolver
+    // Generate Resolver
     this.ResolverSchema.mutation.fields[mutationName] = {
       type: this.FieldSchema[fieldSchemaName],
       args: args ? args : null,
@@ -25,7 +25,6 @@ class MutationGenerator extends require('./QueryGenerator') {
     const gql = this.createGQLString(mutationName, 'mutation', this.FieldSchema[fieldSchemaName], args);
 
     this.gql[mutationName] = gql;
-
   }
 }
 

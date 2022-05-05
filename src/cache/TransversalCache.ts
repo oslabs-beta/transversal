@@ -6,7 +6,7 @@ class TransversalCache {
   public client: any;
   public cacheMiddleware: any;
 
-  constructor(redisClient) {
+  constructor(redisClient, origin) {
     this.client = redisClient;
     this.client.connect();
     this.client.on('error', (err) => console.log('Redis Client Error', err));
@@ -41,14 +41,13 @@ class TransversalCache {
       // Get cached data & checking if key/value exists
       const cache = JSON.parse(await this.get(query));
 
-      // If Cache does not exist
+      // If cache does not exist
       if (!cache) {
-        const data = await request('http://localhost:3000/graphql', req.body.query, req.body.variables);
+        const data = await request(`${origin}/graphql`, req.body.query, req.body.variables);
         await this.set(query, JSON.stringify(data));
         return res.status(200).json(data);
       } else {
-        // If Cache exists
-        // TODO: For production change this return to only 'cache'
+        // If cache exists
         return res.status(200).json({ cache: cache });
       }
     };
@@ -58,9 +57,8 @@ class TransversalCache {
   async set(name, data) {
     try {
       await this.client.set(name, data);
-      console.log('Data saved in redis...');
     } catch (err) {
-      console.log('Data save failed in redis...');
+      console.log('Data save failed in redis...', err);
     }
   }
 
@@ -68,10 +66,9 @@ class TransversalCache {
   async get(name) {
     try {
       const data = await this.client.get(name);
-      console.log('Successfully retrieved data from redis...');
       return data;
     } catch (err) {
-      console.log('Failed to retrieve data from redis...');
+      console.log('Failed to retrieve data from redis...', err);
     }
   }
 }
