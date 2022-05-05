@@ -12,7 +12,8 @@ class Transversal extends require('./utilities/GQLStringGenerator') {
     this.cache = new TransversalCache(redisClient);
   }
   jsonStringify(transversal) {
-    return JSON.stringify({ gql: transversal.gql, transversalQuery: transversal.transversalQuery }, jsonStringify);
+    const data = { gql: transversal.gql };
+    return JSON.stringify(data);
   }
 
   instantiateSocket(server, origin) {
