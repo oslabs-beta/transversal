@@ -7,7 +7,7 @@ class TransversalQuery extends require('../generators/SchemaGenerator') {
   constructor(MongoModels: any[]) {
     super(MongoModels);
     this.gql = {};
-    this.transversalQuery = async (gql, variables, cacheOption = false, custom) => {
+    this.transversalQuery = `async (gql, variables, cacheOption = false, custom) => {
       if (custom) {
         const pattern = /^.+{$/gm;
 
@@ -59,7 +59,7 @@ class TransversalQuery extends require('../generators/SchemaGenerator') {
           .then((data) => data);
         return res;
       }
-    };
+    }`;
   }
 }
 
