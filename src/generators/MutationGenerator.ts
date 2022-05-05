@@ -16,10 +16,16 @@ class MutationGenerator extends require('./QueryGenerator') {
     };
 
     // Generate RootSchema
-    const schema = new GraphQLSchema({
-      mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
-    });
-    this.RootSchema = { ...this.RootSchema, ...schema };
+    if (Object.keys(this.ResolverSchema.query.fields).length === 0) {
+      this.RootSchema = new GraphQLSchema({
+        mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+      });
+    } else {
+      this.RootSchema = new GraphQLSchema({
+        query: new GraphQLObjectType(this.ResolverSchema.query),
+        mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+      });
+    }
 
     // Generate GQL Query String
     const gql = this.createGQLString(mutationName, 'mutation', this.FieldSchema[fieldSchemaName], args);

@@ -16,10 +16,16 @@ class QueryGenerator extends require('./SchemaGenerator') {
     };
 
     // Generate RootSchema
-    const schema = new GraphQLSchema({
-      query: new GraphQLObjectType(this.ResolverSchema.query),
-    });
-    this.RootSchema = { ...this.RootSchema, ...schema };
+    if (Object.keys(this.ResolverSchema.mutation.fields).length === 0) {
+      this.RootSchema = new GraphQLSchema({
+        query: new GraphQLObjectType(this.ResolverSchema.query),
+      });
+    } else {
+      this.RootSchema = new GraphQLSchema({
+        query: new GraphQLObjectType(this.ResolverSchema.query),
+        mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
+      });
+    }
 
     // Generate gql query string
     const gql = this.createGQLString(queryName, 'query', this.FieldSchema[fieldSchemaName], args);
