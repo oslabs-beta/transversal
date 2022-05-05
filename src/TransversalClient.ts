@@ -55,16 +55,10 @@ class TransversalClient {
       return res;
     };
 
-    console.log('Checking cache option..!', gql);
-
     if (!cacheOption) {
-      console.log('caching option not selected');
       const res = await request('/graphql', gql, variables);
-      console.log('res', res);
       return res;
     } else {
-      console.log('caching option selected!');
-
       const res = await fetch('/transversal', {
         method: 'POST',
         headers: {
