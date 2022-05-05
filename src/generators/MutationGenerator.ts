@@ -16,10 +16,10 @@ class MutationGenerator extends require('./QueryGenerator') {
     };
 
     // Generate RootSchema
-    this.RootSchema = new GraphQLSchema({
-      query: new GraphQLObjectType(this.ResolverSchema.query),
+    const schema = new GraphQLSchema({
       mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
     });
+    this.RootSchema = { ...this.RootSchema, ...schema };
 
     // Generate GQL Query String
     const gql = this.createGQLString(mutationName, 'mutation', this.FieldSchema[fieldSchemaName], args);

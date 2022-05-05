@@ -6,7 +6,7 @@ const { IResolverSchema, IRootSchema } = require('../types/Interfaces');
 class TransversalSchema {
   protected FieldSchema: any;
   protected ResolverSchema: IResolverSchema;
-  public RootSchema: IRootSchema;
+  public RootSchema: IRootSchema | null;
   public gql: any;
 
   constructor() {
@@ -21,10 +21,7 @@ class TransversalSchema {
         fields: {},
       },
     };
-    this.RootSchema = new GraphQLSchema({
-      query: new GraphQLObjectType(this.ResolverSchema.query),
-      mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
-    });
+    this.RootSchema = null;
     this.gql = {};
   }
 }

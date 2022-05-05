@@ -16,10 +16,10 @@ class QueryGenerator extends require('./SchemaGenerator') {
     };
 
     // Generate RootSchema
-    this.RootSchema = new GraphQLSchema({
+    const schema = new GraphQLSchema({
       query: new GraphQLObjectType(this.ResolverSchema.query),
-      mutation: new GraphQLObjectType(this.ResolverSchema.mutation),
     });
+    this.RootSchema = { ...this.RootSchema, ...schema };
 
     // Generate gql query string
     const gql = this.createGQLString(queryName, 'query', this.FieldSchema[fieldSchemaName], args);
