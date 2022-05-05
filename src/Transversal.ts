@@ -1,7 +1,6 @@
 export {};
 
 const TransversalCache = require('./cache/TransversalCache');
-const jsonStringify = require('./utilities/jsonStringify');
 const InstantiateSocket = require('./utilities/InstantiateSocket');
 
 class Transversal extends require('./utilities/GQLStringGenerator') {
