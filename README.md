@@ -1,5 +1,5 @@
 # **Transversal**
-Transversal is an open-source package that aids developers in utilizing GraphQL's dynamic querying language to auto-generate schemas, queries, and mutations on the frontend from the query template initially setup in the backend.Transversal leverages Redis' in-memory caching mechanism to quickly reference server-side caching.
+Transversal is an open-source package that aids developers in utilizing GraphQL's dynamic querying language to auto-generate schemas, queries, and mutations on the frontend from the query template initially setup in the backend. Transversal leverages Redis' in-memory caching mechanism to quickly reference server-side caching.
 
 [![License](https://img.shields.io/badge/license-MIT-orange)]()
 [![Contributions](https://img.shields.io/badge/contributions-welcome-blue)]()
