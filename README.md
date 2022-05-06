@@ -26,6 +26,7 @@ Then we will call the generateFieldSchema() method to establish GraphQL’s type
 ### Query & Mutations
 
 When setting up GraphQL queries or mutations, you can use TransversaL’s generateQuery() method and generateMutation() method. But first, we need to define the arguments for the resolver(if any) and the resolver itself. Then we need to pass in the query/mutation name in which we want to register it under, and the fieldschema to reference, the arguments for the resolver if any, if none then null, and the resolver. Arguments will need to be statically typed accordingly
+
 **Query**
 ![](https://lh5.googleusercontent.com/nheO8gRgDGw5j1NbyosGIGMJUc4g20JVyD4R5CjQo50wo14-tAb9CwONqF-MoOZtBSVgSYGZlrxXfh_pC91jC2m3tzvG4PVoAvgy1Op1jYoeSCSXH-RzlS_z4weRQF8SJjuoUJi60v5S1j1tZQ)![](https://lh3.googleusercontent.com/MmyeJv6jizcODdnXR9c4JOJnYpHHRUpV79ylD9_IUv5ssZ4wtIgcsakMqIn1ZuBmGsbX-nvmOddxN4mVimzARK-7dHDtmTyY60vaT8nZBjPOuFIFmFIdtnjAO_9WMO1zlAUUr3cLYzXwvko5yg)
 ![](https://lh3.googleusercontent.com/pkmWYxFdUAryIZ5B9JLqCIXbx5zazNMMoC09LQFEBeTv3hslJLFDjIPZWVrKrcbjg9zhcnlel1PHQjXfE1z7q1SQyYN2jvF1cTg1nMwpZzt8-tMMwlP-LbeyARR7W_9mLdJcJ2XUbASrDWry5w)
